@@ -7,6 +7,7 @@ export const Container = styled.div`
   width: 100%;
   height: 100vh;
   background-color: ${({ theme }) => theme.colors.primary};
+  overflow: hidden;
 `;
 
 export const ContentContainer = styled.div`
@@ -14,4 +15,5 @@ export const ContentContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 `;

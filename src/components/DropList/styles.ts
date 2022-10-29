@@ -1,0 +1,61 @@
+import styled from 'styled-components';
+import { AiFillCaretDown, AiFillCaretUp } from 'react-icons/ai';
+
+export const Container = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 0;
+  overflow: scroll;
+`;
+
+export const ArrowUp = styled(AiFillCaretUp)`
+  font-size: 15px;
+  color: white;
+`;
+
+export const ArrowDown = styled(AiFillCaretDown)`
+  font-size: 15px;
+  color: white;
+`;
+
+export const Label = styled.p`
+  font-size: 12px;
+  text-align: center;
+  margin-right: 5px;
+  color: ${({ theme }) => theme.colors.text};
+  font-family: ${({ theme }) => theme.fonts.poppins};
+`;
+
+export const DropLabel = styled.p`
+  font-size: 12px;
+  text-align: center;
+  font-weight: 700;
+  margin-right: 5px;
+  color: ${({ theme }) => theme.colors.text};
+  font-family: ${({ theme }) => theme.fonts.poppins};
+`;
+
+export const DropContainer = styled.div`
+  flex-direction: column;
+  position: absolute;
+  background-color: ${({ theme }) => theme.colors.secondary};
+  border-radius: 5px;
+  padding: 5px;
+  right: 50px;
+  height: 100px;
+  bottom: 200px;
+  min-width: 100px;
+  overflow: scroll;
+`;
+
+export const DropItem = styled.div`
+  display: flex;
+  padding: 5px;
+  align-items: center;
+  margin-bottom: 5px;
+  cursor: pointer;
+  height: 10px;
+  border-bottom: 0.5px solid #cececece;
+`;

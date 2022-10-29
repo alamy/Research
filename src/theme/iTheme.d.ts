@@ -6,6 +6,7 @@ declare module 'styled-components' {
       primary: string;
       secondary: string;
       header: string;
+      activeGreen: string;
       text: string;
     };
 
