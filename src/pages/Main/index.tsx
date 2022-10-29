@@ -1,9 +1,14 @@
 import React from 'react';
 
-// import { Container } from './styles';
+import { Header } from 'components';
+import * as S from './styles';
 
 const MainPage: React.FC = () => {
-  return <div />;
+  return (
+    <S.Container>
+      <Header />
+    </S.Container>
+  );
 };
 
 export default MainPage;
