@@ -1,6 +1,6 @@
 export default {
-  primary: 'rgba(0, 0, 0, 0.9)',
-  secondary: '#1b1b1b04',
-  header: 'rgba(70, 70, 70, 0.4)',
+  primary: 'rgba(0, 0, 0, 0.95)',
+  secondary: 'rgba(40, 40, 40, 0.8)',
+  header: 'rgba(40, 40, 40, 0.3)',
   text: '#FFFFFF'
 };

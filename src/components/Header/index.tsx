@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import React, { useCallback } from 'react';
-import { FiUser } from 'react-icons/fi';
+import { AiOutlineUser } from 'react-icons/ai';
 
 import * as I from './interfaces';
 import * as S from './styles';
@@ -27,7 +27,7 @@ const Header: React.FC<I.IHeader> = ({ items }) => {
       <S.ItemsContainer>{renderItems()}</S.ItemsContainer>
 
       <S.ProfilePicture>
-        <FiUser size={35} color="white" />
+        <AiOutlineUser size={35} color="white" />
       </S.ProfilePicture>
     </S.Container>
   );

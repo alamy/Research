@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { Header } from 'components';
-import * as S from './styles';
+import { Header, Table } from 'components';
 import { IHeaderItem } from 'components/Header/interfaces';
+import * as S from './styles';
 
 const MainPage: React.FC = () => {
   const headerItems: IHeaderItem[] = [
@@ -43,6 +43,10 @@ const MainPage: React.FC = () => {
   return (
     <S.Container>
       <Header items={headerItems} />
+
+      <S.ContentContainer>
+        <Table />
+      </S.ContentContainer>
     </S.Container>
   );
 };

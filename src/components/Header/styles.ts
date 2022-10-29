@@ -11,7 +11,7 @@ export const Container = styled.div`
   height: 90px;
   padding: 0px 5vw;
   justify-content: space-between;
-  box-shadow: 0 5px 10px 0px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 5px 10px 0px rgba(10, 10, 10, 1);
 `;
 
 export const Logo = styled.img`
