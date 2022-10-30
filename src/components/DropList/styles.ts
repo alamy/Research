@@ -31,11 +31,13 @@ export const Label = styled.p`
 export const DropLabel = styled.p`
   font-size: 12px;
   text-align: center;
-  font-weight: 700;
+  font-weight: 800;
   margin-right: 5px;
   color: ${({ theme }) => theme.colors.text};
   font-family: ${({ theme }) => theme.fonts.poppins};
 `;
+
+export const DropDownContainer = styled.div``;
 
 export const DropContainer = styled.div`
   flex-direction: column;
@@ -43,11 +45,10 @@ export const DropContainer = styled.div`
   background-color: ${({ theme }) => theme.colors.secondary};
   border-radius: 5px;
   padding: 5px;
-  right: 50px;
   height: 100px;
-  bottom: 200px;
   min-width: 100px;
   overflow: scroll;
+  z-index: 999;
 `;
 
 export const DropItem = styled.div`

@@ -38,8 +38,7 @@ const Paginator: React.FC<I.IPaginator> = ({ onSelect, pages, selectedPage }) =>
           onSelect={() => {}}
           selected={dropListSelected}
           dropProps={{
-            right: '35%',
-            bottom: '11%'
+            bottom: 20
           }}
         />
       )}

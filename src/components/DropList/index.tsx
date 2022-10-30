@@ -30,7 +30,11 @@ const DropList: React.FC<I.IDropList> = ({
       <S.Label>{items[0].label}</S.Label>
       {opened ? <S.ArrowUp /> : <S.ArrowDown />}
 
-      {opened && <S.DropContainer style={dropProps}>{renderItems()}</S.DropContainer>}
+      {opened && (
+        <S.DropDownContainer>
+          <S.DropContainer style={dropProps}>{renderItems()}</S.DropContainer>
+        </S.DropDownContainer>
+      )}
     </S.Container>
   );
 };

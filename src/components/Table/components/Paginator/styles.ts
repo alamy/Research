@@ -14,6 +14,7 @@ export const Container = styled.div`
 `;
 
 export const PageContainer = styled.div<PageContainerProps>`
+  position: relative;
   display: flex;
   width: 30px;
   height: 30px;

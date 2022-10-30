@@ -1,13 +1,18 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-  height: 80vh;
-  width: 80%;
-  border-radius: 30px;
-  overflow: hidden;
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 0px 0px;
   display: flex;
+  max-height: 80vh;
+  max-width: 80%;
+  border-radius: 30px;
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 0px 0px;
   flex-direction: column;
-  overflow: hidden;
+`;
+
+export const SupContentContainer = styled.div`
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow-x: scroll;
 `;

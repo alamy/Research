@@ -1,5 +1,5 @@
 export interface IColumns {
-  columns: IColumnModel;
+  columns: IColumnModel[];
 }
 
 export interface IColumnModel {

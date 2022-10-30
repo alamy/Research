@@ -1,8 +1,11 @@
 import styled from 'styled-components';
 
-export const Container = styled.div`
+interface ContainerProps {
+  width: number;
+}
+
+export const Container = styled.div<ContainerProps>`
   display: flex;
-  height: 50px;
-  width: 100%;
+  width: ${({ width }) => width}px;
   background-color: ${({ theme }) => theme.colors.secondary};
 `;
