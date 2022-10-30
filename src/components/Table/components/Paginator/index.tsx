@@ -2,40 +2,50 @@
 import React, { useCallback } from 'react';
 import DropList from 'components/DropList';
 
+import { IDropItem } from 'components/DropList/interfaces';
+import * as U from './utils';
 import * as I from './interfaces';
 import * as S from './styles';
-import { IDropItem } from 'components/DropList/interfaces';
+import { useTableManager } from 'hooks';
 
 const Paginator: React.FC<I.IPaginator> = ({ onSelect, pages, selectedPage }) => {
-  const moreThanTen: boolean = pages > 10;
+  const { activeColumns } = useTableManager();
+  const hideRowList: boolean = activeColumns.length < 4;
+  const showDropList: boolean = pages > 10;
   const list: number[] = Array.from(Array(pages).keys());
-  const dropListSelected: IDropItem | undefined = selectedPage
-    ? { id: selectedPage.toString(), label: selectedPage.toString() }
-    : undefined;
-  const dropList: IDropItem[] = list
-    .slice(10)
-    .map((page) => ({ id: (page + 1).toString(), label: (page + 1).toString() }));
+  const dropListSelected: IDropItem | undefined = U.getDroplistSelected(selectedPage, hideRowList);
+  const dropList: IDropItem[] = U.parseToDroplist(list, hideRowList);
+
+  const handleSelectOnList = useCallback(
+    (item: IDropItem) => () => {
+      onSelect(Number(item.id))();
+    },
+    [onSelect]
+  );
 
   const renderPages = useCallback((): JSX.Element[] => {
-    const listRow: number[] = list.slice(0, moreThanTen ? 10 : list.length);
+    const listRow: number[] = list.slice(0, showDropList ? 10 : list.length);
     const result: JSX.Element[] = listRow.map((page, idx) => (
-      <S.PageContainer selected={page === selectedPage} key={idx.toPrecision()}>
+      <S.PageContainer
+        onClick={onSelect(page + 1)}
+        selected={page === selectedPage - 1}
+        key={idx.toPrecision()}>
         <S.Page>{page + 1}</S.Page>
       </S.PageContainer>
     ));
 
     return result;
-  }, [selectedPage, list, moreThanTen]);
+  }, [selectedPage, list, showDropList, onSelect]);
 
   return (
     <S.Container>
-      {renderPages()}
+      {!hideRowList && renderPages()}
 
-      {moreThanTen && (
+      {showDropList && (
         <DropList
           containerStyle={{ marginLeft: 5 }}
           items={dropList}
-          onSelect={() => {}}
+          onSelect={handleSelectOnList}
           selected={dropListSelected}
           dropProps={{
             bottom: 20

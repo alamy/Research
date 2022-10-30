@@ -1,16 +1,18 @@
 import React, { useCallback } from 'react';
+import { useTableManager } from 'hooks';
 
 import * as C from './components';
-import * as I from './interfaces';
 import * as S from './styles';
 
-const Columns: React.FC<I.IColumns> = ({ columns }) => {
-  const renderItems = useCallback((): JSX.Element[] => {
-    const result = columns.map((item, idx) => <C.Cell key={idx.toString()} item={item} />);
-    return result;
-  }, [columns]);
+const Columns: React.FC = () => {
+  const { activeColumns } = useTableManager();
 
-  return <S.Container width={columns.length * 120}>{renderItems()}</S.Container>;
+  const renderItems = useCallback((): JSX.Element[] => {
+    const result = activeColumns.map((item, idx) => <C.Cell key={idx.toString()} item={item} />);
+    return result;
+  }, [activeColumns]);
+
+  return <S.Container width={activeColumns.length * 120}>{renderItems()}</S.Container>;
 };
 
 export default Columns;

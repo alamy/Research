@@ -33,6 +33,7 @@ export const PageContainer = styled.div<PageContainerProps>`
 
 export const Page = styled.p`
   font-size: 12px;
+  font-weight: 700;
   text-align: center;
   color: ${({ theme }) => theme.colors.text};
   font-family: ${({ theme }) => theme.fonts.poppins};

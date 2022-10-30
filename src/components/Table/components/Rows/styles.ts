@@ -1,8 +1,12 @@
 import styled from 'styled-components';
 
-export const Container = styled.div`
+interface ContainerProps {
+  width: number;
+}
+
+export const Container = styled.div<ContainerProps>`
   height: 1000px;
-  width: ${22 * 120}px;
+  width: ${({ width }) => width}px;
   overflow-y: scroll !important;
 `;
 

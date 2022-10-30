@@ -1,49 +1,25 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { Header, Table } from 'components';
-import { IHeaderItem } from 'components/Header/interfaces';
+import { headerItems } from './data';
 import * as S from './styles';
+import { IHeaderItem } from 'components/Header/interfaces';
+import { useTableManager } from 'hooks';
+import { IPossibleTables } from 'hooks/Table/interfaces';
 
 const MainPage: React.FC = () => {
-  const headerItems: IHeaderItem[] = [
-    {
-      label: 'Long Short Radio',
-      onSelect: () => {}
+  const { setTable, table } = useTableManager();
+  const onSelect = useCallback(
+    (item: IHeaderItem) => () => {
+      setTable(item.id as IPossibleTables);
     },
-    {
-      label: 'Open Interest',
-      onSelect: () => {}
-    },
-    {
-      label: 'Order Book Depth',
-      onSelect: () => {}
-    },
-    {
-      label: 'Market Volume',
-      onSelect: () => {}
-    },
-    {
-      label: 'Liquidations',
-      onSelect: () => {}
-    },
-    {
-      label: 'Funding',
-      onSelect: () => {}
-    },
-    {
-      label: 'Radar',
-      onSelect: () => {}
-    },
-    {
-      label: 'Exposição',
-      onSelect: () => {}
-    }
-  ];
+    [setTable]
+  );
 
   return (
     <S.Container>
-      <Header items={headerItems} />
+      <Header items={headerItems} onSelect={onSelect} selectedId={table} />
 
       <S.ContentContainer>
         <Table />

@@ -18,16 +18,16 @@ const DropList: React.FC<I.IDropList> = ({
 
   const renderItems = useCallback((): JSX.Element[] => {
     const result: JSX.Element[] = items.map((item, idx) => (
-      <S.DropItem key={idx.toString()} onClick={() => console.log(item)}>
-        <S.DropLabel>{item.label}</S.DropLabel>
+      <S.DropItem key={idx.toString()} onClick={onSelect(item)}>
+        <S.DropLabel selected={!!selected && selected.id === item.id}>{item.label}</S.DropLabel>
       </S.DropItem>
     ));
     return result;
-  }, [items]);
+  }, [items, onSelect, selected]);
 
   return (
     <S.Container onClick={toggleState} style={containerStyle}>
-      <S.Label>{items[0].label}</S.Label>
+      <S.Label selected={!!selected}>{selected ? selected.label : items[0]?.label}</S.Label>
       {opened ? <S.ArrowUp /> : <S.ArrowDown />}
 
       {opened && (
