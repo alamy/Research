@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 import React, { useCallback } from 'react';
-import { AiOutlineUser } from 'react-icons/ai';
 import { useMediaQuery } from 'react-responsive';
 
 import * as I from './interfaces';

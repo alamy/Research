@@ -6,14 +6,12 @@ import * as C from './components';
 import * as S from './styles';
 
 const Columns: React.FC = () => {
-  const { activeColumns } = useTableManager();
+  const { activeColumns, table } = useTableManager();
 
   const renderItems = useCallback((): JSX.Element[] => {
-    const result = activeColumns.map((item) => (
-      <C.Cell key={`${item.id}-${Math.random()}`} item={item} />
-    ));
+    const result = activeColumns.map((item) => <C.Cell key={`${table}-${item.id}`} item={item} />);
     return result;
-  }, [activeColumns]);
+  }, [activeColumns, table]);
 
   return <S.Container width={activeColumns.length * CELL_WIDTH}>{renderItems()}</S.Container>;
 };

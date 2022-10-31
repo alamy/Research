@@ -2,6 +2,10 @@ import styled from 'styled-components';
 import { FiArrowDown, FiArrowUp, FiFilter } from 'react-icons/fi';
 import { CELL_HEIGHT, CELL_WIDTH } from 'hooks/Table/consants';
 
+interface FilterProps {
+  isSelected: boolean;
+}
+
 export const Container = styled.div`
   display: flex;
   align-items: center;
@@ -14,6 +18,8 @@ export const Container = styled.div`
     background-color: rgba(100, 100, 100, 0.4);
   }
 `;
+
+export const AuxContainer = styled.div``;
 
 export const Label = styled.p`
   font-size: 14px;
@@ -46,11 +52,11 @@ export const ArrowDown = styled(FiArrowDown)`
   }
 `;
 
-export const Filter = styled(FiFilter)`
+export const Filter = styled(FiFilter)<FilterProps>`
   font-size: 18px;
-  color: white;
   cursor: pointer;
   transition: 0.2s;
+  color: ${({ theme, isSelected }) => (isSelected ? theme.colors.activeGreen : 'white')};
 
   :hover {
     color: ${({ theme }) => theme.colors.activeGreen};
