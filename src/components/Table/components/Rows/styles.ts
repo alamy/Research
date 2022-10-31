@@ -1,26 +1,19 @@
 import styled from 'styled-components';
+import { CELL_HEIGHT } from 'hooks/Table/consants';
 
 interface ContainerProps {
   width: number;
 }
 
 export const Container = styled.div<ContainerProps>`
-  height: 1000px;
+  max-height: 75vh;
   width: ${({ width }) => width}px;
-  overflow-y: scroll !important;
+  overflow: scroll;
 `;
 
 export const Row = styled.div`
   display: flex;
   width: 100%;
-  height: 50px;
-`;
-
-export const Cell = styled.div`
-  display: flex;
-  align-items: center;
-  width: 120px;
-  height: 50px;
-  justify-content: center;
-  margin: 0px 10px;
+  height: ${CELL_HEIGHT}px;
+  margin-bottom: 5px;
 `;

@@ -7,7 +7,7 @@ interface PageContainerProps {
 export const Container = styled.div`
   display: flex;
   width: 100%;
-  height: 50px;
+  height: 70px;
   align-items: center;
   justify-content: center;
   background-color: ${({ theme }) => theme.colors.secondary};

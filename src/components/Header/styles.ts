@@ -13,7 +13,7 @@ export const Container = styled.div`
   background-color: ${({ theme }) => theme.colors.header};
   display: flex;
   align-items: center;
-  height: 90px;
+  height: 70px;
   padding: 0px 5vw;
   justify-content: space-between;
   box-shadow: 0 5px 10px 0px rgba(10, 10, 10, 1);

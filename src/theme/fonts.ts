@@ -1,3 +1,4 @@
 export default {
-  poppins: 'Poppins'
+  poppins: 'Poppins',
+  roboto: 'Roboto'
 };

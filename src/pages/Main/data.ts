@@ -32,6 +32,6 @@ export const headerItems: IHeaderItem[] = [
   },
   {
     id: IPossibleTables.EXPOSICAO,
-    label: 'Exposição'
+    label: 'Alerta Trade View'
   }
 ];

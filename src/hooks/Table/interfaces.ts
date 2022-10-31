@@ -10,13 +10,43 @@ export interface ITableManagerContextData {
   table: IPossibleTables;
   currentPage: number;
   totalPages: number;
+  symbols: ISymbol[];
+  tableData: ITableData;
+  isLoading: boolean;
   toggleColumnState: (index: number, state: boolean) => void;
   setTable: (table: IPossibleTables) => void;
   setPage: (page: number) => void;
 }
 
+export interface ITimeRequest {
+  url: string;
+  valueToFind: string;
+  positionToFind: number;
+}
+
+export interface ITimeHelper {
+  [key: string]: { [key: string]: ITimeRequest };
+}
+
+export interface IGeneralTableData {
+  [key: string]: ITableData;
+}
+
+export interface ITableData {
+  [key: string]: (string | number)[];
+}
+
 export interface ITablesMapper {
   [key: string]: IColumnModel[];
+}
+
+export interface ISocketData {
+  [key: string]: string;
+}
+
+export interface ISymbol {
+  symbol: string;
+  price: number;
 }
 
 export interface IColumnModel {

@@ -6,6 +6,7 @@ import { TableManagerProvider } from 'hooks';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { theme } from 'theme';
+import 'react-activity/dist/library.css';
 import './index.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);

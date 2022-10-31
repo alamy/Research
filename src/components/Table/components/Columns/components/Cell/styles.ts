@@ -1,20 +1,25 @@
 import styled from 'styled-components';
 import { FiArrowDown, FiArrowUp, FiFilter } from 'react-icons/fi';
+import { CELL_HEIGHT, CELL_WIDTH } from 'hooks/Table/consants';
 
 export const Container = styled.div`
   display: flex;
   align-items: center;
-  width: 120px;
-  height: 50px;
+  width: ${CELL_WIDTH}px;
+  height: ${CELL_HEIGHT}px;
   justify-content: center;
-  margin: 0px 10px;
+  cursor: pointer;
+
+  :hover {
+    background-color: rgba(100, 100, 100, 0.4);
+  }
 `;
 
 export const Label = styled.p`
   font-size: 14px;
-  font-weight: 700;
   color: ${({ theme }) => theme.colors.text};
-  font-family: ${({ theme }) => theme.fonts.poppins};
+  font-weight: 900;
+  font-family: ${({ theme }) => theme.fonts.roboto};
 `;
 
 export const ArrowUp = styled(FiArrowUp)`

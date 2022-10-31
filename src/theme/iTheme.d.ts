@@ -12,6 +12,7 @@ declare module 'styled-components' {
 
     fonts: {
       poppins: string;
+      roboto: string;
     };
   }
 }
