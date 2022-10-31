@@ -12,10 +12,21 @@ export interface ITableManagerContextData {
   totalPages: number;
   symbols: ISymbol[];
   tableData: ITableData;
-  isLoading: boolean;
+  timeToUpdate: number;
   toggleColumnState: (index: number, state: boolean) => void;
   setTable: (table: IPossibleTables) => void;
   setPage: (page: number) => void;
+}
+
+export interface IFundingData {
+  E: number;
+  T: number;
+  P: string;
+  e: string;
+  i: string;
+  p: string;
+  r: string;
+  s: string;
 }
 
 export interface ITimeRequest {
@@ -42,6 +53,10 @@ export interface ITablesMapper {
 
 export interface ISocketData {
   [key: string]: string;
+}
+
+export interface IGenericData {
+  [key: string]: any;
 }
 
 export interface ISymbol {

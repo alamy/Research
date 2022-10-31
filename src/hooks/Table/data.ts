@@ -246,7 +246,7 @@ export const tables: ITablesMapper = {
       enabled: true
     },
     {
-      id: 'OI %',
+      id: 'OI',
       label: 'OI %',
       enabled: true
     },

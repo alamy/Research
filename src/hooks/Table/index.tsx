@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import axios from 'axios';
 import useWebSocket from 'react-use-websocket';
@@ -13,8 +16,8 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
   const [columns, setColumns] = useState<I.IColumnModel[]>([]);
   const [symbols, setSymbols] = useState<I.ISymbol[]>([]);
   const [tableData, setTableData] = useState<I.IGeneralTableData>({});
-  const [isLoading, setLoading] = useState<boolean>(false);
   const [fundingTableData, setFoundingTableData] = useState<I.ISocketData>({});
+  const [timer, setTimer] = useState<number>(0);
 
   const { lastJsonMessage: fundingData } = useWebSocket(
     'wss://fstream.binance.com/ws/!markPrice@arr'
@@ -46,19 +49,20 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
 
   const prepareTableData = useCallback(async () => {
     setColumns([...tables[table]]);
-    setLoading(true);
     const data = await U.prepareData(symbols, table, fundingTableData);
     const newTableData = { ...tableData };
     newTableData[table] = data;
     setTableData(newTableData);
-    setLoading(false);
   }, [fundingTableData, symbols, table]);
 
-  const formatFoundingData = useCallback(() => {
+  const formatFoundingData = () => {
     if (!fundingData) return;
-    const newFoundingData: I.ISocketData = U.adjustFunding(fundingData);
-    setFoundingTableData(newFoundingData);
-  }, [fundingData]);
+    if (timer <= 0) {
+      const newFoundingData: I.ISocketData = U.adjustFunding(fundingData as any);
+      setFoundingTableData(newFoundingData);
+      setTimer(180);
+    }
+  };
 
   useEffect(() => {
     prepareTableData();
@@ -70,12 +74,20 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
 
   useEffect(() => {
     formatFoundingData();
-  }, [formatFoundingData]);
+  }, [fundingData]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (timer > 0) setTimer(timer - 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [timer]);
 
   return (
     <U.Context.Provider
       value={{
-        isLoading,
+        timeToUpdate: timer,
         tableData: tableData[table] || {},
         symbols,
         totalPages,
