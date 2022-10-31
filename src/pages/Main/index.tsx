@@ -12,7 +12,7 @@ import { IPossibleTables } from 'hooks/Table/interfaces';
 
 const MainPage: React.FC = () => {
   const { setTable, table, tableData } = useTableManager();
-  const isLoading = !Object.keys(tableData).length;
+  const isLoading = !Object.keys(tableData).length || !tableData.symbol.length;
   const onSelect = useCallback(
     (item: IHeaderItem) => () => {
       setTable(item.id as IPossibleTables);

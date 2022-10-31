@@ -71,6 +71,22 @@ const getParcial = async (symbolsStr: string[], url: string): Promise<any[]> => 
   return parcial;
 };
 
+const getValueMask = (value: string | number): string => {
+  const valueAsNumber = Number(value);
+  if (!valueAsNumber) return `${value}`;
+
+  const thousands = Math.floor(valueAsNumber / 1000);
+  const milions = Math.floor(valueAsNumber / 1000000);
+  const bilions = Math.floor(valueAsNumber / 1000000000);
+  const trillions = Math.floor(valueAsNumber / 1000000000000);
+
+  if (trillions) return `${trillions}T`;
+  if (bilions) return `${bilions}B`;
+  if (milions) return `${milions}M`;
+  if (thousands) return `${thousands}K`;
+  return `${valueAsNumber}`;
+};
+
 export const prepareData = async (
   symbols: I.ISymbol[],
   table: I.IPossibleTables,
@@ -129,7 +145,7 @@ export const prepareData = async (
       const parcial = await getParcial(symbolsStr, url);
       requestResp[column] = parcial;
       data[column] = symbolsStr.map((_, idx) => {
-        return parcial[idx].openInterest;
+        return `$${getValueMask(parcial[idx].openInterest)}`;
       });
     }
 
@@ -140,7 +156,9 @@ export const prepareData = async (
       });
 
       data[column] = symbolsStr.map((symbol, idx) => {
-        const item: any = Number(requestResp.oi[idx].openInterest) * Number(symbolValues[symbol]);
+        const item: any = getValueMask(
+          Number(requestResp.oi[idx].openInterest) * Number(symbolValues[symbol])
+        );
         return item;
       });
     }
