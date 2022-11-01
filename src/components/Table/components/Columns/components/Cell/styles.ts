@@ -6,6 +6,10 @@ interface FilterProps {
   selected: boolean;
 }
 
+interface OrderProps {
+  selected: boolean;
+}
+
 export const Container = styled.div`
   display: flex;
   align-items: center;
@@ -28,24 +32,26 @@ export const Label = styled.p`
   font-family: ${({ theme }) => theme.fonts.roboto};
 `;
 
-export const ArrowUp = styled(FiArrowUp)`
+export const ArrowUp = styled(FiArrowUp)<OrderProps>`
   font-size: 18px;
   color: white;
   margin: 0px 2px;
   cursor: pointer;
   transition: 0.2s;
+  color: ${({ theme, selected }) => (selected ? theme.colors.activeGreen : 'white')};
 
   :hover {
     color: ${({ theme }) => theme.colors.activeGreen};
   }
 `;
 
-export const ArrowDown = styled(FiArrowDown)`
+export const ArrowDown = styled(FiArrowDown)<OrderProps>`
   font-size: 18px;
   color: white;
   margin: 0px 2px;
   cursor: pointer;
   transition: 0.2s;
+  color: ${({ theme, selected }) => (selected ? theme.colors.activeGreen : 'white')};
 
   :hover {
     color: ${({ theme }) => theme.colors.activeGreen};

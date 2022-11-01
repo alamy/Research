@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import React, { useState, useEffect, useCallback, useContext } from 'react';
@@ -18,6 +17,7 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
   const [tableData, setTableData] = useState<I.IGeneralTableData>({});
   const [fundingTableData, setFoundingTableData] = useState<I.ISocketData>({});
   const [filters, setFilters] = useState<I.IFilters>({});
+  const [order, setOrder] = useState<I.IGenericData>({});
   const [timer, setTimer] = useState<number>(0);
   const [PAGE_LIMIT] = useState<number>(20);
 
@@ -69,18 +69,40 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
   const handleApplyFilters = useCallback(
     (data: I.IRowData[]): I.IRowData[] => {
       const currFilters = filters[table];
-      if (!currFilters || !Object.keys(currFilters).length) return data;
-      const filteredData = data.filter((item) => {
-        const isValid = Object.keys(currFilters).every((column) =>
-          item[column].toLowerCase().includes(currFilters[column].value.toLowerCase())
-        );
+      let filteredData = data;
+      if (currFilters && Object.keys(currFilters).length) {
+        filteredData = data.filter((item) => {
+          const isValid = Object.keys(currFilters).every((column) =>
+            item[column].toLowerCase().includes(currFilters[column].value.toLowerCase())
+          );
+          return isValid;
+        });
+      }
 
-        return isValid;
+      const currOrder = order[table];
+      if (!currOrder) return filteredData;
+
+      const { column } = currOrder;
+
+      filteredData.sort((prev, next) => {
+        if (column === 'symbol') {
+          if (currOrder.order === 'ASC') {
+            return prev.symbol.localeCompare(next.symbol);
+          } else {
+            return next.symbol.localeCompare(prev.symbol);
+          }
+        }
+
+        const value1 = Number(prev[column].replace(/\D/g, ''));
+        const value2 = Number(next[column].replace(/\D/g, ''));
+
+        if (currOrder.order === 'ASC') return value1 - value2;
+        return value2 - value1;
       });
 
       return filteredData;
     },
-    [filters, table]
+    [filters, table, order]
   );
 
   const assertPages = useCallback(() => {
@@ -114,6 +136,15 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
     [filters, table, assertPages]
   );
 
+  const setOrderBy = useCallback(
+    (column: string, od: 'ASC' | 'DESC') => {
+      const newOrder: I.IGenericData = { ...order };
+      newOrder[table] = { column, order: od };
+      setOrder(newOrder);
+    },
+    [table, order]
+  );
+
   useEffect(() => {
     prepareTableData();
   }, [prepareTableData]);
@@ -131,16 +162,20 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
   }, [assertPages]);
 
   useEffect(() => {
+    /*
     const interval = setInterval(() => {
       if (timer > 0) setTimer(timer - 1);
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [timer]);
+    */
+  }, []);
 
   return (
     <U.Context.Provider
       value={{
+        order: order[table] || {},
+        setOrderBy,
         removeFilter: handleRemoveFilter,
         setFilter: handleSetFilter,
         filters: filters[table] || {},

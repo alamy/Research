@@ -11,12 +11,16 @@ const Cell: React.FC<I.IColumnCell> = ({ item }) => {
   const [orderDown, setOrderDown] = useState<boolean>(true);
   const [isFilterSelected, setFilterSelected] = useState<boolean>(false);
 
-  const { table, filters, setFilter, removeFilter } = useTableManager();
-  const filter = filters[item.id.toLowerCase()];
+  const { table, filters, setFilter, removeFilter, setOrderBy, order } = useTableManager();
+  const column = item.id.toLowerCase();
+  const filter = filters[column];
+  const isOrdered = order && order.column === column;
 
   const toggleOrder = useCallback(() => {
+    if (orderDown) setOrderBy(column, 'ASC');
+    else setOrderBy(column, 'DESC');
     setOrderDown(!orderDown);
-  }, [orderDown]);
+  }, [orderDown, column, setOrderBy]);
 
   const toggleFilter = useCallback(() => {
     setFilterSelected(!isFilterSelected);
@@ -25,21 +29,25 @@ const Cell: React.FC<I.IColumnCell> = ({ item }) => {
   const handleApply = useCallback(
     (value: string) => () => {
       setFilterSelected(false);
-      if (value) setFilter(item.id.toLowerCase(), value);
+      if (value) setFilter(column, value);
     },
-    [item.id, setFilter]
+    [column, setFilter]
   );
 
   const handleCancel = useCallback(() => {
     setFilterSelected(false);
-    if (filter) removeFilter(item.id.toLowerCase());
-  }, [filter, item.id, removeFilter]);
+    if (filter) removeFilter(column);
+  }, [filter, removeFilter, column]);
 
   return (
     <S.Container>
       <S.Label>{item.label}</S.Label>
-      {orderDown ? <S.ArrowDown onClick={toggleOrder} /> : <S.ArrowUp onClick={toggleOrder} />}
-      <S.Filter selected={isFilterSelected || filter} onClick={toggleFilter} />
+      {orderDown ? (
+        <S.ArrowDown selected={isOrdered} onClick={toggleOrder} />
+      ) : (
+        <S.ArrowUp selected={isOrdered} onClick={toggleOrder} />
+      )}
+      <S.Filter selected={isFilterSelected || (filter && filter.value)} onClick={toggleFilter} />
       <FloatContent style={{ top: 50, width: 150 }} isVisible={isFilterSelected}>
         <C.Filter
           id={`${table}-${item.id}`}

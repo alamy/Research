@@ -15,6 +15,8 @@ export interface ITableManagerContextData {
   tableData: IRowData[];
   timeToUpdate: number;
   filters: IGenericData;
+  order: IGenericData;
+  setOrderBy: (column: string, order: 'ASC' | 'DESC') => void;
   removeFilter: (column: string) => void;
   setFilter: (column: string, value: string) => void;
   toggleColumnState: (index: number, state: boolean) => void;
@@ -64,6 +66,10 @@ export interface IGenericData {
 }
 
 export interface IFilters {
+  [key: string]: IGenericData;
+}
+
+export interface IOrder {
   [key: string]: IGenericData;
 }
 
