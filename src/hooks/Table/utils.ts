@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prettier/prettier */
 import { createContext } from 'react';
 import axios from 'axios';
@@ -102,7 +103,7 @@ export const prepareData = async (
 
   if (table === I.IPossibleTables.FUNDING) {
     data.forEach((item) => {
-      item['funding rate'] = (Number(fundingData[item.symbol]) * 100).toString();
+      item['funding rate'] = (Number(fundingData[item.symbol]) * 100).toFixed(5).toString();
     });
     return data;
   }
@@ -143,7 +144,7 @@ export const prepareData = async (
 
       data.forEach((row, index) => {
         const item: any = parcial[index][parcial[index].length - 1];
-        row[column] = item ? Number(item.longShortRatio).toFixed(2) : '';
+        row[column] = item ? Number(item.longShortRatio).toFixed(1) : '';
       });
     }
 
@@ -172,5 +173,9 @@ export const prepareData = async (
     }
   }
 
-  return data;
+  return data.filter(
+    (item) =>
+      (item['15m'] === undefined || !!item['15m']) &&
+      (item['positions'] === undefined || !!item['positions'])
+  );
 };

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 
 import * as I from './interfaces';
@@ -11,8 +12,13 @@ const Filter: React.FC<I.IFilter> = ({ handleApply, handleCancel, id, filter }) 
       <S.RowContainer>
         <S.Button
           onClick={handleCancel}
-          style={{ border: '1px solid #a5b4fc', backgroundColor: '#1c2127' }}>
-          <S.Label style={{ color: '#a5b4fc' }}>{filter ? 'Delete' : 'Cancel'}</S.Label>
+          style={{
+            border: `1px solid ${!filter ? '#a5b4fc' : '#a5326b'}`,
+            backgroundColor: !filter ? '#1c2127' : '#a5326b'
+          }}>
+          <S.Label style={{ color: !filter ? '#a5b4fc' : '#ffffff' }}>
+            {filter ? 'Remove' : 'Cancel'}
+          </S.Label>
         </S.Button>
 
         <S.Button

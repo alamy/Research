@@ -7,8 +7,15 @@ interface ContainerProps {
 
 export const Container = styled.div<ContainerProps>`
   max-height: 75vh;
+  min-height: 70px;
   width: ${({ width }) => width}px;
   overflow: scroll;
+`;
+
+export const LoadContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const Row = styled.div`
@@ -16,4 +23,6 @@ export const Row = styled.div`
   width: 100%;
   height: ${CELL_HEIGHT}px;
   margin-bottom: 5px;
+  transition: 0.2s;
+  cursor: pointer;
 `;

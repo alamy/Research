@@ -1,6 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import axios from 'axios';
 import useWebSocket from 'react-use-websocket';
@@ -19,6 +19,7 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
   const [fundingTableData, setFoundingTableData] = useState<I.ISocketData>({});
   const [filters, setFilters] = useState<I.IFilters>({});
   const [timer, setTimer] = useState<number>(0);
+  const [PAGE_LIMIT] = useState<number>(20);
 
   const { lastJsonMessage: fundingData } = useWebSocket(
     'wss://fstream.binance.com/ws/!markPrice@arr'
@@ -65,6 +66,54 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
     }
   };
 
+  const handleApplyFilters = useCallback(
+    (data: I.IRowData[]): I.IRowData[] => {
+      const currFilters = filters[table];
+      if (!currFilters || !Object.keys(currFilters).length) return data;
+      const filteredData = data.filter((item) => {
+        const isValid = Object.keys(currFilters).every((column) =>
+          item[column].toLowerCase().includes(currFilters[column].value.toLowerCase())
+        );
+
+        return isValid;
+      });
+
+      return filteredData;
+    },
+    [filters, table]
+  );
+
+  const assertPages = useCallback(() => {
+    const pages = Math.ceil(handleApplyFilters(tableData[table] || []).length / PAGE_LIMIT);
+    setTotalPages(pages);
+    setCurrentPage(1);
+  }, [PAGE_LIMIT, handleApplyFilters, table, tableData]);
+
+  const handleSetFilter = useCallback(
+    (column: string, value: string) => {
+      const newFilters = { ...filters };
+      if (!newFilters[table]) {
+        newFilters[table] = {};
+      }
+
+      newFilters[table][column] = { value, order: '' };
+      setFilters(newFilters);
+      assertPages();
+    },
+    [filters, table, assertPages]
+  );
+
+  const handleRemoveFilter = useCallback(
+    (column: string) => {
+      const newFilters = { ...filters };
+      if (!newFilters[table]) return;
+      delete newFilters[table][column];
+      setFilters(newFilters);
+      assertPages();
+    },
+    [filters, table, assertPages]
+  );
+
   useEffect(() => {
     prepareTableData();
   }, [prepareTableData]);
@@ -77,82 +126,9 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
     formatFoundingData();
   }, [fundingData]);
 
-  const handleSetFilter = useCallback(
-    (column: string, value: string) => {
-      const newFilters = { ...filters };
-      if (!newFilters[table]) {
-        newFilters[table] = {};
-      }
-
-      newFilters[table][column] = { value, order: '' };
-      setFilters(newFilters);
-    },
-    [filters, table]
-  );
-
-  const handleRemoveFilter = useCallback(
-    (column: string) => {
-      const newFilters = { ...filters };
-      if (!newFilters[table]) return;
-      delete newFilters[table][column];
-      setFilters(newFilters);
-    },
-    [filters]
-  );
-
-  const handleApplyFilters = useCallback(
-    (data: I.IGenericData) => {
-      /*
-      const validIndex: I.IGenericData = {};
-      const currFilters = filters[table];
-      const td = tableData[table];
-      let resultIndex: number[] = [];
-      const resultMap: I.IGenericData = {};
-      const resultMapFilter: any[] = [];
-      const finalResult: I.IGenericData = {};
-
-      if (!currFilters || !Object.keys(currFilters).length) return data;
-
-      Object.keys(currFilters).forEach((filter) => {
-        const column = td[filter.toLowerCase()];
-        column.forEach((value, idx) => {
-          if (`${value}`.toLowerCase().includes(`${currFilters[filter].value.toLowerCase()}`)) {
-            if (!validIndex[filter.toLowerCase()]) {
-              validIndex[filter.toLowerCase()] = [idx];
-            } else {
-              validIndex[filter.toLowerCase()].push(idx);
-            }
-          }
-        });
-      });
-
-      if (!Object.keys(validIndex).length) return {};
-
-      Object.keys(validIndex).forEach((filter) => {
-        resultIndex = [...resultIndex, ...validIndex[filter]];
-      });
-
-      resultIndex.forEach((value) => {
-        resultMap[value] = !resultMap[value] ? 1 : resultMap[value] + 1;
-      });
-
-      Object.keys(resultMap).forEach((idx) => {
-        if (resultMap[idx] === Object.keys(validIndex).length) {
-          resultMapFilter.push(idx);
-        }
-      });
-
-      Object.keys(td).forEach((column) => {
-        finalResult[column] = resultMapFilter.map((idx) => td[column][idx]);
-      });
-
-      // console.log(resultMapFilter);
-
-      return finalResult;
-      */
-    },
-    [tableData, filters]
-  );
+  useEffect(() => {
+    assertPages();
+  }, [assertPages]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -169,7 +145,10 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
         setFilter: handleSetFilter,
         filters: filters[table] || {},
         timeToUpdate: timer,
-        tableData: tableData[table] || [],
+        tableData: handleApplyFilters(tableData[table] || []).slice(
+          (currentPage - 1) * PAGE_LIMIT,
+          currentPage * PAGE_LIMIT
+        ),
         symbols,
         totalPages,
         currentPage,

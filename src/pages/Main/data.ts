@@ -4,7 +4,7 @@ import { IPossibleTables } from 'hooks/Table/interfaces';
 export const headerItems: IHeaderItem[] = [
   {
     id: IPossibleTables.LONG_SHORT_RATIO,
-    label: 'Long Short Radio'
+    label: 'Long Short Ratio'
   },
   {
     id: IPossibleTables.ORDER_BOOK_DEPTH,
@@ -32,6 +32,6 @@ export const headerItems: IHeaderItem[] = [
   },
   {
     id: IPossibleTables.EXPOSICAO,
-    label: 'Alerta Trade View'
+    label: 'Alert Trading View'
   }
 ];

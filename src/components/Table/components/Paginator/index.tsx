@@ -10,11 +10,13 @@ import { useTableManager } from 'hooks';
 
 const Paginator: React.FC<I.IPaginator> = ({ onSelect, pages, selectedPage }) => {
   const { activeColumns } = useTableManager();
-  const hideRowList: boolean = activeColumns.length < 4;
-  const showDropList: boolean = pages > 10;
+  const lastRowIndex = activeColumns.length > 10 ? 10 : activeColumns.length;
   const list: number[] = Array.from(Array(pages).keys());
-  const dropListSelected: IDropItem | undefined = U.getDroplistSelected(selectedPage, hideRowList);
-  const dropList: IDropItem[] = U.parseToDroplist(list, hideRowList);
+  const dropListSelected: IDropItem | undefined = U.getDroplistSelected(selectedPage, lastRowIndex);
+  const dropList: IDropItem[] = U.parseToDroplist(
+    list,
+    activeColumns.length > 10 ? 10 : activeColumns.length
+  );
 
   const handleSelectOnList = useCallback(
     (item: IDropItem) => () => {
@@ -24,7 +26,7 @@ const Paginator: React.FC<I.IPaginator> = ({ onSelect, pages, selectedPage }) =>
   );
 
   const renderPages = useCallback((): JSX.Element[] => {
-    const listRow: number[] = list.slice(0, showDropList ? 10 : list.length);
+    const listRow: number[] = list.slice(0, lastRowIndex);
     const result: JSX.Element[] = listRow.map((page, idx) => (
       <S.PageContainer
         onClick={onSelect(page + 1)}
@@ -35,13 +37,13 @@ const Paginator: React.FC<I.IPaginator> = ({ onSelect, pages, selectedPage }) =>
     ));
 
     return result;
-  }, [selectedPage, list, showDropList, onSelect]);
+  }, [selectedPage, list, onSelect, lastRowIndex]);
 
   return (
     <S.Container>
-      {!hideRowList && renderPages()}
+      {renderPages()}
 
-      {showDropList && (
+      {list.slice(0, lastRowIndex).length < pages && (
         <DropList
           containerStyle={{ marginLeft: 5 }}
           items={dropList}

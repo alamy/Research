@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { Dots } from 'react-activity';
 import { useTableManager } from 'hooks';
 
 import { CELL_WIDTH } from 'hooks/Table/consants';
@@ -19,7 +20,20 @@ const Rows: React.FC = () => {
     return result;
   }, [tableData]);
 
-  return <S.Container width={activeColumns.length * CELL_WIDTH}>{renderItems()}</S.Container>;
+  return (
+    <S.Container width={activeColumns.length * CELL_WIDTH}>
+      {tableData.length ? (
+        renderItems()
+      ) : (
+        <S.LoadContainer
+          style={{
+            width: `${(activeColumns.length > 9 ? 9 : activeColumns.length) * CELL_WIDTH}px`
+          }}>
+          <Dots size={50} color="white" />
+        </S.LoadContainer>
+      )}
+    </S.Container>
+  );
 };
 
 export default Rows;

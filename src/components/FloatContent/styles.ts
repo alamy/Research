@@ -12,5 +12,5 @@ export const Container = styled.div<ContainerProps>`
   overflow: hidden;
   z-index: ${({ isVisible }) => (isVisible ? 999 : -1)};
   opacity: ${({ isVisible }) => (isVisible ? 1 : 0)};
-  transition: 0.7s;
+  transition: 0.5s;
 `;

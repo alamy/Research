@@ -10,12 +10,17 @@ export const container = styled.div`
   background-color: ${({ theme }) => theme.colors.secondary};
   width: 100%;
   height: 100%;
+  opacity: 0.7;
+
+  :hover {
+    opacity: 1;
+  }
 `;
 
 export const Input = styled.input`
   width: 95%;
   height: 30px;
-  font-size: 12px;
+  font-size: 14px;
   text-align: center;
   background-color: #0c203c;
   font-family: ${({ theme }) => theme.fonts.roboto};

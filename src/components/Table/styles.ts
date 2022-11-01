@@ -17,5 +17,4 @@ export const SupContentContainer = styled.div`
   width: 100%;
   overflow-x: scroll;
   transition: 1s;
-  padding-bottom: 200px;
 `;

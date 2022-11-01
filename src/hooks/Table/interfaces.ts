@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 
 export interface ITableManager {
@@ -44,10 +45,6 @@ export interface ITimeHelper {
 
 export interface IGeneralTableData {
   [key: string]: IRowData[];
-}
-
-export interface ITableData {
-  [key: string]: (string | number)[];
 }
 
 export interface IRowData {

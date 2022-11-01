@@ -11,12 +11,16 @@ const Cell: React.FC<I.ICell> = ({ column, rowIndex }) => {
     (typeof data === 'string' && !!Number(data.replace('%', ''))) || typeof data === 'number';
   const isPositive = typeof data === 'string' && Number(data.replace('%', '')) > 0;
   const isNegative = typeof data === 'string' && Number(data.replace('%', '')) < 0;
+  const notLSR = column !== 'lsr';
 
-  if (isNumeric && isPositive) data = '+' + data;
+  if (column !== 'lsr' && isNumeric && isPositive) data = '+' + data;
 
   return (
     <S.Container>
-      <S.Label isNumeric={isNumeric} isPositive={isPositive} isNegative={isNegative}>
+      <S.Label
+        isNumeric={notLSR && isNumeric}
+        isPositive={notLSR && isPositive}
+        isNegative={notLSR && isNegative}>
         {data?.toUpperCase() || '-'}
       </S.Label>
     </S.Container>
