@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import React, { useState, useEffect, useCallback, useContext } from 'react';
@@ -62,7 +63,7 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
     if (timer <= 0) {
       const newFoundingData: I.ISocketData = U.adjustFunding(fundingData as any);
       setFoundingTableData(newFoundingData);
-      setTimer(180);
+      setTimer(60);
     }
   };
 
@@ -162,13 +163,11 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
   }, [assertPages]);
 
   useEffect(() => {
-    /*
     const interval = setInterval(() => {
       if (timer > 0) setTimer(timer - 1);
     }, 1000);
 
     return () => clearInterval(interval);
-    */
   }, []);
 
   return (
