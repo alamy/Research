@@ -22,10 +22,7 @@ const Cell: React.FC<I.IColumnCell> = ({ item }) => {
     <S.Container>
       <S.Label>{item.label}</S.Label>
       {orderDown ? <S.ArrowDown onClick={toggleOrder} /> : <S.ArrowUp onClick={toggleOrder} />}
-      <S.Filter
-        isSelected={isFilterSelected}
-        onClick={() => setFilterSelected(!isFilterSelected)}
-      />
+      <S.Filter selected={isFilterSelected} onClick={() => setFilterSelected(!isFilterSelected)} />
       <FloatContent style={{ top: 55, width: 145, borderRadius: 5 }} isVisible={isFilterSelected}>
         <C.Filter
           id={`${table}-${item.id}`}

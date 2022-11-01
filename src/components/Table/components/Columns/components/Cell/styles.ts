@@ -3,7 +3,7 @@ import { FiArrowDown, FiArrowUp, FiFilter } from 'react-icons/fi';
 import { CELL_HEIGHT, CELL_WIDTH } from 'hooks/Table/consants';
 
 interface FilterProps {
-  isSelected: boolean;
+  selected: boolean;
 }
 
 export const Container = styled.div`
@@ -56,7 +56,7 @@ export const Filter = styled(FiFilter)<FilterProps>`
   font-size: 18px;
   cursor: pointer;
   transition: 0.2s;
-  color: ${({ theme, isSelected }) => (isSelected ? theme.colors.activeGreen : 'white')};
+  color: ${({ theme, selected }) => (selected ? theme.colors.activeGreen : 'white')};
 
   :hover {
     color: ${({ theme }) => theme.colors.activeGreen};

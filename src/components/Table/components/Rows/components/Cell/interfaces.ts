@@ -1,4 +1,4 @@
 export interface ICell {
-  columnIndex: number;
+  column: string;
   rowIndex: number;
 }

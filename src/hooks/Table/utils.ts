@@ -46,9 +46,15 @@ const getBaseData = (symbols: I.ISymbol[], table: string) => {
   );
   const symbolsStr: string[] = symbols.map((item) => item.symbol.toUpperCase());
 
-  const data: I.ITableData = { symbol: symbolsStr };
-  columns.forEach((column) => {
-    data[column.id.toLowerCase()] = [];
+  const data: I.IRowData[] = [];
+
+  symbols.forEach((item) => {
+    const current: I.IGenericData = { symbol: item.symbol.toLowerCase() };
+    columns.forEach((column) => {
+      current[column.id.toLowerCase()] = '';
+    });
+
+    data.push(current);
   });
 
   const requestResp: I.IGenericData = {};
@@ -91,14 +97,13 @@ export const prepareData = async (
   symbols: I.ISymbol[],
   table: I.IPossibleTables,
   fundingData: I.ISocketData
-): Promise<I.ITableData> => {
+): Promise<I.IRowData[]> => {
   const { columns, data, requestResp, symbolsStr } = getBaseData(symbols, table);
 
   if (table === I.IPossibleTables.FUNDING) {
-    for (let index = 0; index < columns.length; index++) {
-      const column = columns[index].id.toLowerCase();
-      data[column] = symbolsStr.map((symbol) => Number(fundingData[symbol.toLowerCase()]) * 100);
-    }
+    data.forEach((item) => {
+      item['funding rate'] = (Number(fundingData[item.symbol]) * 100).toString();
+    });
     return data;
   }
 
@@ -108,9 +113,9 @@ export const prepareData = async (
     if (TIME_IDS.indexOf(column) !== -1) {
       const { positionToFind, valueToFind } = timeHelper[table][column];
       requestResp[column] = await loadTimeData(table, column, symbolsStr);
-      data[column] = requestResp[column].map((_: unknown, idx: number) => {
-        const item = requestResp[column][idx].at(positionToFind);
-        return item ? item[valueToFind] : '';
+      data.forEach((row, index) => {
+        const item = requestResp[column][index].at(positionToFind);
+        row[column] = item ? item[valueToFind] : '';
       });
     }
 
@@ -118,15 +123,17 @@ export const prepareData = async (
     if (PERCENT_IDS.indexOf(column) !== -1 && Object.keys(requestResp).indexOf(base) !== -1) {
       const { positionToFind, valueToFind } = timeHelper[table][base];
       const baseValues = requestResp[base];
-      data[column] = baseValues.map((_: unknown, idx: number) => {
-        const newItem = baseValues[idx].at(positionToFind);
-        const oldItem = baseValues[idx].at(positionToFind - 1);
+      data.forEach((row, index) => {
+        const newItem = baseValues[index].at(positionToFind);
+        const oldItem = baseValues[index].at(positionToFind - 1);
         if (!newItem || !oldItem) return '';
 
         const newItemAsNumber = Number(newItem[valueToFind]);
         const oldItemAsNumber = Number(oldItem[valueToFind]);
 
-        return `${((newItemAsNumber - oldItemAsNumber) * (100 / oldItemAsNumber)).toFixed(2)}%`;
+        row[column] = `${((newItemAsNumber - oldItemAsNumber) * (100 / oldItemAsNumber)).toFixed(
+          2
+        )}%`;
       });
     }
 
@@ -134,9 +141,9 @@ export const prepareData = async (
       const url = `https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=${S_PLACEHOLDER}&period=15m`;
       const parcial = await getParcial(symbolsStr, url);
 
-      data[column] = symbolsStr.map((_, idx) => {
-        const item: any = parcial[idx][parcial[idx].length - 1];
-        return item ? Number(item.longShortRatio).toFixed(2) : '';
+      data.forEach((row, index) => {
+        const item: any = parcial[index][parcial[index].length - 1];
+        row[column] = item ? Number(item.longShortRatio).toFixed(2) : '';
       });
     }
 
@@ -144,8 +151,9 @@ export const prepareData = async (
       const url = `https://fapi.binance.com/fapi/v1/openInterest?symbol=${S_PLACEHOLDER}`;
       const parcial = await getParcial(symbolsStr, url);
       requestResp[column] = parcial;
-      data[column] = symbolsStr.map((_, idx) => {
-        return `$${getValueMask(parcial[idx].openInterest)}`;
+
+      data.forEach((row, index) => {
+        row[column] = `$${getValueMask(parcial[index].openInterest)}`;
       });
     }
 
@@ -155,11 +163,11 @@ export const prepareData = async (
         symbolValues[symbol.symbol.toUpperCase()] = symbol.price;
       });
 
-      data[column] = symbolsStr.map((symbol, idx) => {
-        const item: any = getValueMask(
-          Number(requestResp.oi[idx].openInterest) * Number(symbolValues[symbol])
+      data.forEach((row, index) => {
+        row[column] = getValueMask(
+          Number(requestResp.oi[index].openInterest) *
+            Number(symbolValues[row.symbol.toUpperCase()])
         );
-        return item;
       });
     }
   }

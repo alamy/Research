@@ -101,7 +101,8 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
   );
 
   const handleApplyFilters = useCallback(
-    (data: I.IGenericData): I.IGenericData => {
+    (data: I.IGenericData) => {
+      /*
       const validIndex: I.IGenericData = {};
       const currFilters = filters[table];
       const td = tableData[table];
@@ -148,6 +149,7 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
       // console.log(resultMapFilter);
 
       return finalResult;
+      */
     },
     [tableData, filters]
   );
@@ -167,7 +169,7 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
         setFilter: handleSetFilter,
         filters: filters[table] || {},
         timeToUpdate: timer,
-        tableData: handleApplyFilters(tableData[table] || {}),
+        tableData: tableData[table] || [],
         symbols,
         totalPages,
         currentPage,

@@ -11,7 +11,7 @@ export interface ITableManagerContextData {
   currentPage: number;
   totalPages: number;
   symbols: ISymbol[];
-  tableData: ITableData;
+  tableData: IRowData[];
   timeToUpdate: number;
   filters: IGenericData;
   removeFilter: (column: string) => void;
@@ -43,11 +43,15 @@ export interface ITimeHelper {
 }
 
 export interface IGeneralTableData {
-  [key: string]: ITableData;
+  [key: string]: IRowData[];
 }
 
 export interface ITableData {
   [key: string]: (string | number)[];
+}
+
+export interface IRowData {
+  [key: string]: string;
 }
 
 export interface ITablesMapper {

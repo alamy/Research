@@ -6,19 +6,18 @@ import * as C from './components';
 import * as S from './styles';
 
 const Rows: React.FC = () => {
-  const { activeColumns, symbols } = useTableManager();
-  const list = Array.from(Array(symbols.length).keys());
+  const { tableData, activeColumns } = useTableManager();
 
   const renderItems = useCallback(() => {
-    const result = list.map((_, idx) => (
+    const result = tableData.map((item, idx) => (
       <S.Row key={idx.toString()}>
-        {activeColumns.map((item, id) => (
-          <C.Cell key={id.toString()} columnIndex={id} rowIndex={idx} />
+        {Object.keys(item).map((column, id) => (
+          <C.Cell key={id.toString()} column={column} rowIndex={idx} />
         ))}
       </S.Row>
     ));
     return result;
-  }, [list, activeColumns]);
+  }, [tableData]);
 
   return <S.Container width={activeColumns.length * CELL_WIDTH}>{renderItems()}</S.Container>;
 };
