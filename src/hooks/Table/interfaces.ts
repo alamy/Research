@@ -13,6 +13,9 @@ export interface ITableManagerContextData {
   symbols: ISymbol[];
   tableData: ITableData;
   timeToUpdate: number;
+  filters: IGenericData;
+  removeFilter: (column: string) => void;
+  setFilter: (column: string, value: string) => void;
   toggleColumnState: (index: number, state: boolean) => void;
   setTable: (table: IPossibleTables) => void;
   setPage: (page: number) => void;
@@ -57,6 +60,10 @@ export interface ISocketData {
 
 export interface IGenericData {
   [key: string]: any;
+}
+
+export interface IFilters {
+  [key: string]: IGenericData;
 }
 
 export interface ISymbol {

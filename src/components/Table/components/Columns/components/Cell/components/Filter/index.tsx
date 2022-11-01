@@ -3,7 +3,7 @@ import React from 'react';
 import * as I from './interfaces';
 import * as S from './styles';
 
-const Filter: React.FC<I.IFilter> = ({ handleApply, handleCancel, id }) => {
+const Filter: React.FC<I.IFilter> = ({ handleApply, handleCancel, id, filter }) => {
   return (
     <S.container>
       <S.Input id={id} placeholder="Insira o valor" />
@@ -12,7 +12,7 @@ const Filter: React.FC<I.IFilter> = ({ handleApply, handleCancel, id }) => {
         <S.Button
           onClick={handleCancel}
           style={{ border: '1px solid #a5b4fc', backgroundColor: '#1c2127' }}>
-          <S.Label style={{ color: '#a5b4fc' }}>Cancel</S.Label>
+          <S.Label style={{ color: '#a5b4fc' }}>{filter ? 'Delete' : 'Cancel'}</S.Label>
         </S.Button>
 
         <S.Button

@@ -11,7 +11,8 @@ const Cell: React.FC<I.IColumnCell> = ({ item }) => {
   const [orderDown, setOrderDown] = useState<boolean>(true);
   const [isFilterSelected, setFilterSelected] = useState<boolean>(false);
 
-  const { table } = useTableManager();
+  const { table, filters, setFilter } = useTableManager();
+  const filter = filters[item.id];
 
   const toggleOrder = useCallback(() => {
     setOrderDown(!orderDown);
@@ -30,8 +31,9 @@ const Cell: React.FC<I.IColumnCell> = ({ item }) => {
           id={`${table}-${item.id}`}
           handleApply={(value: string) => () => {
             setFilterSelected(false);
-            console.log(value);
+            setFilter(item.id, value);
           }}
+          filter={filter && filter.value}
           handleCancel={() => setFilterSelected(false)}
         />
       </FloatContent>
