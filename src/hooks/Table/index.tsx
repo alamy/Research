@@ -168,7 +168,7 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [timer]);
 
   return (
     <U.Context.Provider
