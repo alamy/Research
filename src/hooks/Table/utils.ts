@@ -4,7 +4,7 @@ import { createContext } from 'react';
 import axios from 'axios';
 import { tables, TIME_IDS, PERCENT_IDS, timeHelper } from './data';
 import * as I from './interfaces';
-import { S_PLACEHOLDER } from './consants';
+import { S_PLACEHOLDER, UNAVAILABLE_SYMBOLS } from './consants';
 
 export const Context = createContext<I.ITableManagerContextData>({} as I.ITableManagerContextData);
 
@@ -22,7 +22,8 @@ export const adjustFunding = (fundingData: I.IFundingData[]): I.ISocketData => {
 export const adjustSymbols = (symbols: I.ISymbol[]): I.ISymbol[] => {
   const correctSymbols = symbols
     .filter((item: I.ISymbol) => item.symbol.includes('USDT'))
-    .map((item: I.ISymbol) => ({ ...item, symbol: item.symbol.replace('USDT', '') }));
+    .map((item: I.ISymbol) => ({ ...item, symbol: item.symbol.replace('USDT', '') }))
+    .filter((item: I.ISymbol) =>  UNAVAILABLE_SYMBOLS.indexOf(item.symbol.toLocaleLowerCase()) === -1);
 
   return correctSymbols;
 };
@@ -103,7 +104,7 @@ export const prepareData = async (
 
   if (table === I.IPossibleTables.FUNDING) {
     data.forEach((item) => {
-      item['funding rate'] = (Number(fundingData[item.symbol]) * 100).toFixed(5).toString();
+      item['funding rate'] = `${(Number(fundingData[item.symbol]) * 100).toFixed(4)}%`;
     });
     return data;
   }
@@ -116,7 +117,13 @@ export const prepareData = async (
       requestResp[column] = await loadTimeData(table, column, symbolsStr);
       data.forEach((row, index) => {
         const item = requestResp[column][index].at(positionToFind);
-        row[column] = item ? item[valueToFind] : '';
+        if (item && table === I.IPossibleTables.LONG_SHORT_RATIO) {
+          row[column] = (item[valueToFind]/100).toFixed(2);
+        } else if (item) {
+          row[column] = item[valueToFind];
+        } else {
+          row[column] =  '';
+        }
       });
     }
 
@@ -152,22 +159,21 @@ export const prepareData = async (
       const url = `https://fapi.binance.com/fapi/v1/openInterest?symbol=${S_PLACEHOLDER}`;
       const parcial = await getParcial(symbolsStr, url);
       requestResp[column] = parcial;
-
-      data.forEach((row, index) => {
-        row[column] = `$${getValueMask(parcial[index].openInterest)}`;
-      });
-    }
-
-    if (column === 'positions' && Object.keys(requestResp).indexOf('oi') !== -1) {
       const symbolValues: I.IGenericData = {};
       symbols.forEach((symbol) => {
         symbolValues[symbol.symbol.toUpperCase()] = symbol.price;
       });
 
       data.forEach((row, index) => {
+        row[column] = `$${getValueMask(Number(requestResp.oi[index].openInterest) *
+          Number(symbolValues[row.symbol.toUpperCase()]))}`;
+      });
+    }
+
+    if (column === 'positions' && Object.keys(requestResp).indexOf('oi') !== -1) {
+      data.forEach((row, index) => {
         row[column] = getValueMask(
-          Number(requestResp.oi[index].openInterest) *
-            Number(symbolValues[row.symbol.toUpperCase()])
+          Number(requestResp.oi[index].openInterest)
         );
       });
     }

@@ -12,7 +12,7 @@ const Timer: React.FC = () => {
 
   return (
     <S.Label>
-      Próxima atualização em {U.formatTime(hours)}:{U.formatTime(minutes)}:{U.formatTime(seconds)}
+      Next update in {U.formatTime(hours)}:{U.formatTime(minutes)}:{U.formatTime(seconds)}
     </S.Label>
   );
 };
