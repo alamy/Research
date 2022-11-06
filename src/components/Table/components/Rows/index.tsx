@@ -7,10 +7,10 @@ import * as C from './components';
 import * as S from './styles';
 
 const Rows: React.FC = () => {
-  const { tableData, activeColumns } = useTableManager();
+  const { filteredTableData, activeColumns } = useTableManager();
 
   const renderItems = useCallback(() => {
-    const result = tableData.map((item, idx) => (
+    const result = filteredTableData.map((item, idx) => (
       <S.Row key={idx.toString()}>
         {Object.keys(item).map((column, id) => (
           <C.Cell key={id.toString()} column={column} rowIndex={idx} />
@@ -18,11 +18,11 @@ const Rows: React.FC = () => {
       </S.Row>
     ));
     return result;
-  }, [tableData]);
+  }, [filteredTableData]);
 
   return (
     <S.Container width={activeColumns.length * CELL_WIDTH}>
-      {tableData.length ? (
+      {filteredTableData.length ? (
         renderItems()
       ) : (
         <S.LoadContainer

@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
   display: flex;
+  height: 50px;
 `;
 
 export const Label = styled.p`

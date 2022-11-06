@@ -1,27 +1,25 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import React, { useState, useEffect, useCallback, useContext } from 'react';
 import axios from 'axios';
 import useWebSocket from 'react-use-websocket';
 
+import { useHeaderManager } from 'hooks/Header';
 import { tables } from './data';
 import * as I from './interfaces';
 import * as U from './utils';
+import * as C from './consants';
 
 export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) => {
+  const { isTable, selectedHeaderId } = useHeaderManager();
   const [totalPages, setTotalPages] = useState<number>(15);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [table, setTable] = useState<I.IPossibleTables>(I.IPossibleTables.LONG_SHORT_RATIO);
   const [columns, setColumns] = useState<I.IColumnModel[]>([]);
   const [symbols, setSymbols] = useState<I.ISymbol[]>([]);
   const [tableData, setTableData] = useState<I.IGeneralTableData>({});
-  const [fundingTableData, setFoundingTableData] = useState<I.ISocketData>({});
   const [filters, setFilters] = useState<I.IFilters>({});
   const [order, setOrder] = useState<I.IGenericData>({});
-  const [timer, setTimer] = useState<number>(0);
-  const [lastUpdatedAt, setLastUpdatedAt] = useState<Date>();
-  const [PAGE_LIMIT] = useState<number>(20);
+  const table = isTable() ? selectedHeaderId : '';
 
   const { lastJsonMessage: fundingData } = useWebSocket(
     'wss://fstream.binance.com/ws/!markPrice@arr'
@@ -40,11 +38,6 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
     setCurrentPage(page);
   }, []);
 
-  const handleSetTable = useCallback((currentTable: I.IPossibleTables) => {
-    setCurrentPage(1);
-    setTable(currentTable);
-  }, []);
-
   const getSymbols = useCallback(async () => {
     const response = await axios.get('https://fapi.binance.com/fapi/v1/ticker/price');
     const correctSymbols = U.adjustSymbols(response.data);
@@ -52,22 +45,18 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
   }, []);
 
   const prepareTableData = useCallback(async () => {
-    setColumns([...tables[table]]);
-    const data = await U.prepareData(symbols, table, fundingTableData);
-    const newTableData = { ...tableData };
-    newTableData[table] = data;
-    setTableData(newTableData);
-  }, [fundingTableData, symbols, table]);
-
-  const formatFoundingData = () => {
-    if (!fundingData) return;
-    if (timer <= 0) {
-      const newFoundingData: I.ISocketData = U.adjustFunding(fundingData as any);
-      setFoundingTableData(newFoundingData);
-      setTimer(300);
-      setLastUpdatedAt(new Date());
+    if (!symbols.length) {
+      await getSymbols();
     }
-  };
+    const newTableData = { ...tableData };
+    for (let index = 0; index < C.TABLES.length; index++) {
+      const tb = C.TABLES[index];
+      const fundingTableData = U.adjustFunding(fundingData as any);
+      const data = await U.prepareData(symbols, tb, fundingTableData);
+      newTableData[tb] = data;
+    }
+    setTableData(newTableData);
+  }, [fundingData, getSymbols, symbols, tableData]);
 
   const handleApplyFilters = useCallback(
     (data: I.IRowData[]): I.IRowData[] => {
@@ -109,10 +98,10 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
   );
 
   const assertPages = useCallback(() => {
-    const pages = Math.ceil(handleApplyFilters(tableData[table] || []).length / PAGE_LIMIT);
+    const pages = Math.ceil(handleApplyFilters(tableData[table] || []).length / C.PAGE_LIMIT);
     setTotalPages(pages);
     setCurrentPage(1);
-  }, [PAGE_LIMIT, handleApplyFilters, table, tableData]);
+  }, [handleApplyFilters, table, tableData]);
 
   const handleSetFilter = useCallback(
     (column: string, value: string) => {
@@ -148,54 +137,51 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
     [table, order]
   );
 
-  useEffect(() => {
-    prepareTableData();
-  }, [prepareTableData]);
+  const getFilteredTableData = useCallback(() => {
+    return handleApplyFilters(tableData[table] || []).slice(
+      (currentPage - 1) * C.PAGE_LIMIT,
+      currentPage * C.PAGE_LIMIT
+    );
+  }, [currentPage, handleApplyFilters, table, tableData]);
 
-  useEffect(() => {
-    getSymbols();
-  }, [getSymbols]);
+  const getFilters = useCallback(() => {
+    return filters[table] || {};
+  }, [filters, table]);
 
-  useEffect(() => {
-    formatFoundingData();
-  }, [fundingData]);
+  const getActiveColumns = useCallback(() => {
+    return columns.filter(({ enabled }) => enabled);
+  }, [columns]);
 
   useEffect(() => {
     assertPages();
   }, [assertPages]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (timer > 0) setTimer(timer - 1);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [timer]);
+    if (isTable()) {
+      setCurrentPage(1);
+      setColumns([...tables[table]]);
+    }
+  }, [selectedHeaderId, isTable, table]);
 
   return (
     <U.Context.Provider
       value={{
-        lastUpdatedAt,
+        prepareTableData,
         order: order[table] || {},
         setOrderBy,
         removeFilter: handleRemoveFilter,
         setFilter: handleSetFilter,
-        filters: filters[table] || {},
-        timeToUpdate: timer,
-        allTableData: tableData[table],
-        tableData: handleApplyFilters(tableData[table] || []).slice(
-          (currentPage - 1) * PAGE_LIMIT,
-          currentPage * PAGE_LIMIT
-        ),
+        filters: getFilters(),
+        tableData: tableData[table],
+        filteredTableData: getFilteredTableData(),
         symbols,
         totalPages,
         currentPage,
         columns,
-        activeColumns: columns.filter(({ enabled }) => enabled),
+        activeColumns: getActiveColumns(),
         table,
         toggleColumnState,
-        setPage,
-        setTable: handleSetTable
+        setPage
       }}>
       {children}
     </U.Context.Provider>

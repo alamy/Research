@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import React, { useCallback } from 'react';
-import DropList from 'components/DropList';
 
+import { useTableManager } from 'hooks';
+import DropList from 'components/DropList';
 import { IDropItem } from 'components/DropList/interfaces';
 import * as U from './utils';
 import * as I from './interfaces';
 import * as S from './styles';
-import { useTableManager } from 'hooks';
 
 const Paginator: React.FC<I.IPaginator> = ({ onSelect, pages, selectedPage }) => {
   const { activeColumns } = useTableManager();

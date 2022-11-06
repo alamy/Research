@@ -8,21 +8,19 @@ export interface ITableManager {
 export interface ITableManagerContextData {
   columns: IColumnModel[];
   activeColumns: IColumnModel[];
-  table: IPossibleTables;
+  table: string;
   currentPage: number;
   totalPages: number;
   symbols: ISymbol[];
+  filteredTableData: IRowData[];
   tableData: IRowData[];
-  allTableData: IRowData[];
-  timeToUpdate: number;
   filters: IGenericData;
   order: IGenericData;
-  lastUpdatedAt?: Date;
+  prepareTableData: () => Promise<void>;
   setOrderBy: (column: string, order: 'ASC' | 'DESC') => void;
   removeFilter: (column: string) => void;
   setFilter: (column: string, value: string) => void;
   toggleColumnState: (index: number, state: boolean) => void;
-  setTable: (table: IPossibleTables) => void;
   setPage: (page: number) => void;
 }
 
@@ -95,7 +93,5 @@ export enum IPossibleTables {
   ORDER_BOOK_DEPTH = 'order_book_depth',
   MARKET_VOLUME = 'market_volume',
   LIQUIDATIONS = 'liquidations',
-  FUNDING = 'funding',
-  RADAR = 'radar',
-  EXPOSICAO = 'exposicao'
+  FUNDING = 'funding'
 }
