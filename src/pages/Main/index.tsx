@@ -3,9 +3,10 @@
 import React, { useCallback } from 'react';
 import { Dots } from 'react-activity';
 
+import * as S from './styles';
+import * as C from './components';
 import { Header, Table, Timer } from 'components';
 import { headerItems } from './data';
-import * as S from './styles';
 import { IHeaderItem } from 'components/Header/interfaces';
 import { useTableManager } from 'hooks';
 import { IPossibleTables } from 'hooks/Table/interfaces';
@@ -28,6 +29,7 @@ const MainPage: React.FC = () => {
           <Dots size={50} color="white" />
         ) : (
           <>
+            <C.Extra />
             <Timer />
             <Table />
           </>

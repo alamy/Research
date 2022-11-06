@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { FiArrowDown, FiArrowUp, FiSearch } from 'react-icons/fi';
+import { FiArrowDown, FiArrowUp, FiFilter } from 'react-icons/fi';
 import { CELL_HEIGHT, CELL_WIDTH } from 'hooks/Table/consants';
 
 interface FilterProps {
@@ -58,10 +58,11 @@ export const ArrowDown = styled(FiArrowDown)<OrderProps>`
   }
 `;
 
-export const Filter = styled(FiSearch)<FilterProps>`
+export const Filter = styled(FiFilter)<FilterProps>`
   font-size: 18px;
   cursor: pointer;
   transition: 0.2s;
+  z-index: 200;
   color: ${({ theme, selected }) => (selected ? theme.colors.activeGreen : 'white')};
 
   :hover {

@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-empty-function */
+import React, { useState, useCallback } from 'react';
 import FloatContent from 'components/FloatContent';
 import { useTableManager } from 'hooks';
-import React, { useState, useCallback } from 'react';
 
 import * as C from './components';
 import * as I from './interfaces';
@@ -22,31 +23,44 @@ const Cell: React.FC<I.IColumnCell> = ({ item }) => {
     setOrderDown(!orderDown);
   }, [orderDown, column, setOrderBy]);
 
-  const toggleFilter = useCallback(() => {
-    setFilterSelected(!isFilterSelected);
-  }, [isFilterSelected]);
+  const toggleFilter = useCallback(
+    (evt: any) => {
+      setFilterSelected(!isFilterSelected);
+      evt?.stopPropagation();
+    },
+    [isFilterSelected]
+  );
 
   const handleApply = useCallback(
-    (value: string) => () => {
+    (value: string) => (evt?: any) => {
       setFilterSelected(false);
       if (value) setFilter(column, value);
+      evt?.stopPropagation();
     },
     [column, setFilter]
   );
 
-  const handleCancel = useCallback(() => {
-    setFilterSelected(false);
-    if (filter) removeFilter(column);
-  }, [filter, removeFilter, column]);
+  const handleCancel = useCallback(
+    (evt?: any) => {
+      setFilterSelected(false);
+      if (filter) removeFilter(column);
+      evt?.stopPropagation();
+    },
+    [filter, removeFilter, column]
+  );
+
+  const getArrow = useCallback(() => {
+    if (!isOrdered || orderDown) {
+      return <S.ArrowDown selected={isOrdered} onClick={toggleOrder} />;
+    }
+
+    return <S.ArrowUp selected={isOrdered} onClick={toggleOrder} />;
+  }, [toggleOrder, isOrdered, orderDown]);
 
   return (
-    <S.Container>
+    <S.Container onClick={toggleOrder}>
       <S.Label>{item.label}</S.Label>
-      {orderDown ? (
-        <S.ArrowDown selected={isOrdered} onClick={toggleOrder} />
-      ) : (
-        <S.ArrowUp selected={isOrdered} onClick={toggleOrder} />
-      )}
+      {getArrow()}
       <S.Filter selected={isFilterSelected || (filter && filter.value)} onClick={toggleFilter} />
       <FloatContent style={{ top: 50, width: 150 }} isVisible={isFilterSelected}>
         <C.Filter

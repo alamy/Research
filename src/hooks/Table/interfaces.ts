@@ -13,9 +13,11 @@ export interface ITableManagerContextData {
   totalPages: number;
   symbols: ISymbol[];
   tableData: IRowData[];
+  allTableData: IRowData[];
   timeToUpdate: number;
   filters: IGenericData;
   order: IGenericData;
+  lastUpdatedAt?: Date;
   setOrderBy: (column: string, order: 'ASC' | 'DESC') => void;
   removeFilter: (column: string) => void;
   setFilter: (column: string, value: string) => void;
@@ -37,8 +39,11 @@ export interface IFundingData {
 
 export interface ITimeRequest {
   url: string;
+  periodOrigin: string;
+  periodTarget: string;
+  positionOrigin: number;
+  positionTarget: number;
   valueToFind: string;
-  positionToFind: number;
 }
 
 export interface ITimeHelper {

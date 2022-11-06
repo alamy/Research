@@ -20,6 +20,7 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
   const [filters, setFilters] = useState<I.IFilters>({});
   const [order, setOrder] = useState<I.IGenericData>({});
   const [timer, setTimer] = useState<number>(0);
+  const [lastUpdatedAt, setLastUpdatedAt] = useState<Date>();
   const [PAGE_LIMIT] = useState<number>(20);
 
   const { lastJsonMessage: fundingData } = useWebSocket(
@@ -63,7 +64,8 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
     if (timer <= 0) {
       const newFoundingData: I.ISocketData = U.adjustFunding(fundingData as any);
       setFoundingTableData(newFoundingData);
-      setTimer(60);
+      setTimer(300);
+      setLastUpdatedAt(new Date());
     }
   };
 
@@ -94,8 +96,8 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
           }
         }
 
-        const value1 = Number(prev[column].replace(/\D/g, ''));
-        const value2 = Number(next[column].replace(/\D/g, ''));
+        const value1 = Number(prev[column].replace('%', '').replace('M', '').replace('$', ''));
+        const value2 = Number(next[column].replace('%', '').replace('M', '').replace('$', ''));
 
         if (currOrder.order === 'ASC') return value1 - value2;
         return value2 - value1;
@@ -173,12 +175,14 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
   return (
     <U.Context.Provider
       value={{
+        lastUpdatedAt,
         order: order[table] || {},
         setOrderBy,
         removeFilter: handleRemoveFilter,
         setFilter: handleSetFilter,
         filters: filters[table] || {},
         timeToUpdate: timer,
+        allTableData: tableData[table],
         tableData: handleApplyFilters(tableData[table] || []).slice(
           (currentPage - 1) * PAGE_LIMIT,
           currentPage * PAGE_LIMIT

@@ -8,66 +8,102 @@ export const timeHelper: ITimeHelper = {
     '15m': {
       url: 'https://fapi.binance.com/futures/data/globalLongShortAccountRatio',
       valueToFind: 'longShortRatio',
-      positionToFind: -2
+      periodOrigin: '5m',
+      periodTarget: '5m',
+      positionOrigin: -1,
+      positionTarget: -3
     },
     '1h': {
       url: 'https://fapi.binance.com/futures/data/globalLongShortAccountRatio',
       valueToFind: 'longShortRatio',
-      positionToFind: -1
+      periodOrigin: '5m',
+      periodTarget: '5m',
+      positionOrigin: -1,
+      positionTarget: -12
     },
     '4h': {
       url: 'https://fapi.binance.com/futures/data/globalLongShortAccountRatio',
       valueToFind: 'longShortRatio',
-      positionToFind: -1
+      periodOrigin: '5m',
+      periodTarget: '5m',
+      positionOrigin: -1,
+      positionTarget: -16
     },
     '1d': {
       url: 'https://fapi.binance.com/futures/data/globalLongShortAccountRatio',
       valueToFind: 'longShortRatio',
-      positionToFind: -1
+      periodOrigin: '5m',
+      periodTarget: '5m',
+      positionOrigin: -1,
+      positionTarget: -24
     }
   },
   market_volume: {
     '15m': {
       url: 'https://fapi.binance.com/futures/data/takerlongshortRatio',
       valueToFind: 'buySellRatio',
-      positionToFind: -1
+      periodOrigin: '5m',
+      periodTarget: '5m',
+      positionOrigin: -2,
+      positionTarget: -2
     },
     '1h': {
       url: 'https://fapi.binance.com/futures/data/takerlongshortRatio',
       valueToFind: 'buySellRatio',
-      positionToFind: -1
+      periodOrigin: '5m',
+      periodTarget: '5m',
+      positionOrigin: -12,
+      positionTarget: -12
     },
     '4h': {
       url: 'https://fapi.binance.com/futures/data/takerlongshortRatio',
       valueToFind: 'buySellRatio',
-      positionToFind: -1
+      periodOrigin: '5m',
+      periodTarget: '5m',
+      positionOrigin: -16,
+      positionTarget: -16
     },
     '1d': {
       url: 'https://fapi.binance.com/futures/data/takerlongshortRatio',
       valueToFind: 'buySellRatio',
-      positionToFind: -1
+      periodOrigin: '5m',
+      periodTarget: '5m',
+      positionOrigin: -24,
+      positionTarget: -24
     }
   },
   open_interest: {
     '15m': {
-      url: 'https://fapi.binance.com/futures/data/openInterest',
+      url: 'https://fapi.binance.com/futures/data/openInterestHist',
       valueToFind: 'buySellRatio',
-      positionToFind: -1
+      periodOrigin: '',
+      periodTarget: '',
+      positionOrigin: -1,
+      positionTarget: -1
     },
     '1h': {
-      url: 'https://fapi.binance.com/futures/data/openInterest',
+      url: 'https://fapi.binance.com/futures/data/openInterestHist',
       valueToFind: 'buySellRatio',
-      positionToFind: -1
+      periodOrigin: '',
+      periodTarget: '',
+      positionOrigin: -1,
+      positionTarget: -1
     },
     '4h': {
-      url: 'https://fapi.binance.com/futures/data/openInterest',
+      url: 'https://fapi.binance.com/futures/data/openInterestHist',
       valueToFind: 'buySellRatio',
-      positionToFind: -1
+      periodOrigin: '',
+      periodTarget: '',
+      positionOrigin: -1,
+      positionTarget: -1
     },
     '1d': {
-      url: 'https://fapi.binance.com/futures/data/openInterest',
+      url: 'https://fapi.binance.com/futures/data/openInterestHist',
       valueToFind: 'buySellRatio',
-      positionToFind: -1
+      periodOrigin: '',
+      periodTarget: '',
+      positionOrigin: -1,
+      positionTarget: -1
     }
   }
 };
@@ -87,7 +123,7 @@ export const tables: ITablesMapper = {
     {
       id: '15m',
       label: '15m Δ',
-      enabled: true
+      enabled: false
     },
     {
       id: '15m%',
@@ -97,7 +133,7 @@ export const tables: ITablesMapper = {
     {
       id: '1h',
       label: '1h Δ',
-      enabled: true
+      enabled: false
     },
     {
       id: '1h%',
@@ -107,7 +143,7 @@ export const tables: ITablesMapper = {
     {
       id: '4h',
       label: '4h Δ',
-      enabled: true
+      enabled: false
     },
     {
       id: '4h%',
@@ -117,7 +153,7 @@ export const tables: ITablesMapper = {
     {
       id: '1d',
       label: '24h Δ',
-      enabled: true
+      enabled: false
     },
     {
       id: '1d%',
@@ -153,91 +189,91 @@ export const tables: ITablesMapper = {
       label: 'Symbol',
       enabled: true
     },
-    // {
-    //   id: '15m Δ x mean',
-    //   label: '15m Δ x mean',
-    //   enabled: true
-    // },
-    // {
-    //   id: '15m buy',
-    //   label: '15m buy',
-    //   enabled: true
-    // },
-    // {
-    //   id: '15m sell',
-    //   label: '15m sell',
-    //   enabled: true
-    // },
+    {
+      id: '15m Δ x mean',
+      label: '15m Δ x mean',
+      enabled: false
+    },
+    {
+      id: '15m buy',
+      label: '15m buy',
+      enabled: false
+    },
+    {
+      id: '15m sell',
+      label: '15m sell',
+      enabled: false
+    },
     {
       id: '15m',
       label: '15m BSR Δ',
+      enabled: false
+    },
+    {
+      id: '15m%',
+      label: '15m Δ%',
       enabled: true
     },
-    // {
-    //   id: '15m Δ%',
-    //   label: '15m Δ%',
-    //   enabled: true
-    // },
-    // {
-    //   id: '1h buy',
-    //   label: '1h buy',
-    //   enabled: true
-    // },
-    // {
-    //   id: '1h sell',
-    //   label: '1h sell',
-    //   enabled: true
-    // },
+    {
+      id: '1h buy',
+      label: '1h buy',
+      enabled: false
+    },
+    {
+      id: '1h sell',
+      label: '1h sell',
+      enabled: false
+    },
     {
       id: '1h',
       label: '1h BSR Δ',
+      enabled: false
+    },
+    {
+      id: '1h%',
+      label: '1h Δ%',
       enabled: true
     },
-    // {
-    //   id: '1h Δ%',
-    //   label: '1h Δ%',
-    //   enabled: true
-    // },
-    // {
-    //   id: '4h buy',
-    //   label: '4h buy',
-    //   enabled: true
-    // },
-    // {
-    //   id: '4h sell',
-    //   label: '4h sell',
-    //   enabled: true
-    // },
+    {
+      id: '4h buy',
+      label: '4h buy',
+      enabled: false
+    },
+    {
+      id: '4h sell',
+      label: '4h sell',
+      enabled: false
+    },
     {
       id: '4h',
       label: '4h BSR Δ',
+      enabled: false
+    },
+    {
+      id: '4h%',
+      label: '4h Δ%',
       enabled: true
     },
-    // {
-    //   id: '4h Δ%',
-    //   label: '4h Δ%',
-    //   enabled: true
-    // },
-    // {
-    //   id: '24h buy',
-    //   label: '24h buy',
-    //   enabled: true
-    // },
-    // {
-    //   id: '24h sell',
-    //   label: '24h sell',
-    //   enabled: true
-    // },
+    {
+      id: '24h buy',
+      label: '24h buy',
+      enabled: false
+    },
+    {
+      id: '24h sell',
+      label: '24h sell',
+      enabled: false
+    },
     {
       id: '1d',
       label: '24h BSR Δ',
-      enabled: true
+      enabled: false
+    },
+    {
+      id: '1d%',
+      label: '24h Δ%',
+      enabled: false
     }
-    // {
-    //   id: '24h Δ%',
-    //   label: '24h Δ%',
-    //   enabled: true
-    // }
   ],
   open_interest: [
     {
@@ -253,7 +289,7 @@ export const tables: ITablesMapper = {
     {
       id: 'Positions',
       label: 'Positions',
-      enabled: true
+      enabled: false
     },
     {
       id: '15m',

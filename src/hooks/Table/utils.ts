@@ -23,17 +23,24 @@ export const adjustSymbols = (symbols: I.ISymbol[]): I.ISymbol[] => {
   const correctSymbols = symbols
     .filter((item: I.ISymbol) => item.symbol.includes('USDT'))
     .map((item: I.ISymbol) => ({ ...item, symbol: item.symbol.replace('USDT', '') }))
-    .filter((item: I.ISymbol) =>  UNAVAILABLE_SYMBOLS.indexOf(item.symbol.toLocaleLowerCase()) === -1);
+    .filter(
+      (item: I.ISymbol) => UNAVAILABLE_SYMBOLS.indexOf(item.symbol.toLocaleLowerCase()) === -1
+    );
 
   return correctSymbols;
 };
 
-const loadTimeData = async (table: string, column: string, symbolsStr: string[]) => {
+const loadTimeData = async (
+  table: string,
+  column: string,
+  period: string,
+  symbolsStr: string[]
+) => {
   const { url } = timeHelper[table][column];
   const response = await Promise.all(
     symbolsStr.map(async (symbol) => {
       const response = await axios.get(
-        `${url}?symbol=${symbol.toUpperCase()}USDT&period=${column}`
+        `${url}?symbol=${symbol.toUpperCase()}USDT&period=${period}`
       );
       return response.data;
     })
@@ -79,7 +86,7 @@ const getParcial = async (symbolsStr: string[], url: string): Promise<any[]> => 
   return parcial;
 };
 
-const getValueMask = (value: string | number): string => {
+export const getValueMask = (value: string | number): string => {
   const valueAsNumber = Number(value);
   if (!valueAsNumber) return `${value}`;
 
@@ -95,66 +102,129 @@ const getValueMask = (value: string | number): string => {
   return `${valueAsNumber}`;
 };
 
-export const prepareData = async (
-  symbols: I.ISymbol[],
+const getFundingData = (data: I.IRowData[], fundingData: I.ISocketData): I.IRowData[] => {
+  const newData = [...data];
+  newData.forEach((item) => {
+    item['funding rate'] = `${(Number(fundingData[item.symbol]) * 100).toFixed(4)}%`;
+  });
+
+  return newData;
+};
+
+const getLSRData = async (
   table: I.IPossibleTables,
-  fundingData: I.ISocketData
-): Promise<I.IRowData[]> => {
-  const { columns, data, requestResp, symbolsStr } = getBaseData(symbols, table);
-
-  if (table === I.IPossibleTables.FUNDING) {
-    data.forEach((item) => {
-      item['funding rate'] = `${(Number(fundingData[item.symbol]) * 100).toFixed(4)}%`;
-    });
-    return data;
-  }
-
+  data: I.IRowData[],
+  symbolsStr: string[],
+  columns: I.IColumnModel[],
+  requestResp: I.IGenericData
+) => {
   for (let index = 0; index < columns.length; index++) {
     const column = columns[index].id.toLowerCase();
 
     if (TIME_IDS.indexOf(column) !== -1) {
-      const { positionToFind, valueToFind } = timeHelper[table][column];
-      requestResp[column] = await loadTimeData(table, column, symbolsStr);
+      const { positionOrigin, periodTarget, periodOrigin, valueToFind } = timeHelper[table][column];
+      requestResp[column] = await loadTimeData(table, column, column, symbolsStr);
+      if (!requestResp[periodOrigin])
+        requestResp[periodOrigin] = await loadTimeData(table, column, periodOrigin, symbolsStr);
+      if (periodTarget !== periodOrigin) {
+        requestResp[periodTarget] = await loadTimeData(table, column, periodTarget, symbolsStr);
+      }
       data.forEach((row, index) => {
-        const item = requestResp[column][index].at(positionToFind);
-        if (item && table === I.IPossibleTables.LONG_SHORT_RATIO) {
-          row[column] = (item[valueToFind]/100).toFixed(2);
-        } else if (item) {
-          row[column] = item[valueToFind];
-        } else {
-          row[column] =  '';
-        }
+        const item = requestResp[column][index].at(positionOrigin);
+        row[column] = item[valueToFind] || '';
       });
     }
 
     const base = column.replace('%', '');
-    if (PERCENT_IDS.indexOf(column) !== -1 && Object.keys(requestResp).indexOf(base) !== -1) {
-      const { positionToFind, valueToFind } = timeHelper[table][base];
-      const baseValues = requestResp[base];
+    if (PERCENT_IDS.indexOf(column) !== -1) {
+      const { positionOrigin, positionTarget, valueToFind, periodOrigin, periodTarget } =
+        timeHelper[table][base];
+      if (!requestResp[periodOrigin])
+        requestResp[periodOrigin] = await loadTimeData(table, base, periodOrigin, symbolsStr);
+      if (periodTarget !== periodOrigin && !requestResp[periodTarget]) {
+        requestResp[periodTarget] = await loadTimeData(table, base, periodTarget, symbolsStr);
+      }
+      const originValues = requestResp[periodOrigin];
+      const targetValues = requestResp[periodTarget];
       data.forEach((row, index) => {
-        const newItem = baseValues[index].at(positionToFind);
-        const oldItem = baseValues[index].at(positionToFind - 1);
+        const newItem = originValues[index].at(positionOrigin);
+        const oldItem = targetValues[index].at(positionTarget);
         if (!newItem || !oldItem) return '';
 
         const newItemAsNumber = Number(newItem[valueToFind]);
         const oldItemAsNumber = Number(oldItem[valueToFind]);
 
-        row[column] = `${((newItemAsNumber - oldItemAsNumber) * (100 / oldItemAsNumber)).toFixed(
-          2
-        )}%`;
+        row[column] = `${((newItemAsNumber / oldItemAsNumber - 1) * 100).toFixed(2)}%`;
       });
     }
 
     if (column === 'lsr') {
       const url = `https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=${S_PLACEHOLDER}&period=15m`;
-      const parcial = await getParcial(symbolsStr, url);
+      const parcial = requestResp['15m'] || (await getParcial(symbolsStr, url));
 
       data.forEach((row, index) => {
         const item: any = parcial[index][parcial[index].length - 1];
         row[column] = item ? Number(item.longShortRatio).toFixed(1) : '';
       });
     }
+  }
 
+  return data;
+};
+
+const getMVData = async (
+  table: I.IPossibleTables,
+  data: I.IRowData[],
+  symbolsStr: string[],
+  columns: I.IColumnModel[],
+  requestResp: I.IGenericData
+) => {
+  for (let index = 0; index < columns.length; index++) {
+    const column = columns[index].id.toLowerCase();
+
+    if (TIME_IDS.indexOf(column) !== -1) {
+      const { positionOrigin, periodTarget, periodOrigin, valueToFind } = timeHelper[table][column];
+      requestResp[column] = await loadTimeData(table, column, column, symbolsStr);
+      if (!requestResp[periodOrigin])
+        requestResp[periodOrigin] = await loadTimeData(table, column, periodOrigin, symbolsStr);
+      if (periodTarget !== periodOrigin) {
+        requestResp[periodTarget] = await loadTimeData(table, column, periodTarget, symbolsStr);
+      }
+      data.forEach((row, index) => {
+        const item = requestResp[column][index].at(positionOrigin);
+        row[column] = item[valueToFind] || '';
+      });
+    }
+
+    const base = column.replace('%', '');
+    if (PERCENT_IDS.indexOf(column) !== -1) {
+      const { positionOrigin, valueToFind, periodOrigin } = timeHelper[table][base];
+      if (!requestResp[periodOrigin])
+        requestResp[periodOrigin] = await loadTimeData(table, base, periodOrigin, symbolsStr);
+      const originValues = requestResp[periodOrigin];
+      data.forEach((row, index) => {
+        const newItem = originValues[index].at(positionOrigin);
+        if (!newItem) return '';
+
+        const newItemAsNumber = Number(newItem[valueToFind]);
+
+        row[column] = `${((newItemAsNumber - 1) * 100).toFixed(2)}%`;
+      });
+    }
+  }
+
+  return data;
+};
+
+const getOIData = async (
+  symbols: I.ISymbol[],
+  columns: I.IColumnModel[],
+  symbolsStr: string[],
+  requestResp: I.IGenericData,
+  data: I.IRowData[]
+) => {
+  for (let index = 0; index < columns.length; index++) {
+    const column = columns[index].id.toLowerCase();
     if (column === 'oi') {
       const url = `https://fapi.binance.com/fapi/v1/openInterest?symbol=${S_PLACEHOLDER}`;
       const parcial = await getParcial(symbolsStr, url);
@@ -165,23 +235,39 @@ export const prepareData = async (
       });
 
       data.forEach((row, index) => {
-        row[column] = `$${getValueMask(Number(requestResp.oi[index].openInterest) *
-          Number(symbolValues[row.symbol.toUpperCase()]))}`;
-      });
-    }
-
-    if (column === 'positions' && Object.keys(requestResp).indexOf('oi') !== -1) {
-      data.forEach((row, index) => {
-        row[column] = getValueMask(
-          Number(requestResp.oi[index].openInterest)
-        );
+        row[column] = `$${getValueMask(
+          Number(requestResp.oi[index].openInterest) *
+            Number(symbolValues[row.symbol.toUpperCase()])
+        )}`;
       });
     }
   }
 
-  return data.filter(
-    (item) =>
-      (item['15m'] === undefined || !!item['15m']) &&
-      (item['positions'] === undefined || !!item['positions'])
-  );
+  return data;
+};
+
+export const prepareData = async (
+  symbols: I.ISymbol[],
+  table: I.IPossibleTables,
+  fundingData: I.ISocketData
+): Promise<I.IRowData[]> => {
+  const { columns, data, requestResp, symbolsStr } = getBaseData(symbols, table);
+
+  if (table === I.IPossibleTables.FUNDING) {
+    return getFundingData(data, fundingData);
+  }
+
+  if (table === I.IPossibleTables.LONG_SHORT_RATIO) {
+    return await getLSRData(table, data, symbolsStr, columns, requestResp);
+  }
+
+  if (table === I.IPossibleTables.MARKET_VOLUME) {
+    return await getMVData(table, data, symbolsStr, columns, requestResp);
+  }
+
+  if (table === I.IPossibleTables.OPEN_INTEREST) {
+    return await getOIData(symbols, columns, symbolsStr, requestResp, data);
+  }
+
+  return data;
 };

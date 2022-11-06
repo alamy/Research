@@ -7,7 +7,11 @@ import * as S from './styles';
 const Filter: React.FC<I.IFilter> = ({ handleApply, handleCancel, id, filter }) => {
   return (
     <S.container>
-      <S.Input id={id} placeholder="Insira o valor" />
+      <S.Input
+        id={id}
+        onClick={(evt?: any) => evt?.stopPropagation()}
+        placeholder="Insira o valor"
+      />
 
       <S.RowContainer>
         <S.Button
