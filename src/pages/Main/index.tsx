@@ -8,9 +8,10 @@ import * as C from './components';
 import { Header, Table } from 'components';
 import { headerItems } from './data';
 import { useHeaderManager } from 'hooks/Header';
+import Soon from 'components/Soon';
 
 const MainPage: React.FC = () => {
-  const { setHeaderItems, selectHeaderItem } = useHeaderManager();
+  const { setHeaderItems, selectHeaderItem, isTable } = useHeaderManager();
 
   useEffect(() => {
     setHeaderItems(headerItems);
@@ -20,10 +21,9 @@ const MainPage: React.FC = () => {
   return (
     <S.Container>
       <Header />
-
       <S.ContentContainer>
         <C.TopContent />
-        <Table />
+        {isTable() ? <Table /> : <Soon />}
       </S.ContentContainer>
     </S.Container>
   );

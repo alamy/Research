@@ -4,9 +4,11 @@ import { TIME_TO_UPDATE } from 'hooks/Table/consants';
 import { useTableManager } from 'hooks';
 import * as U from './utils';
 import * as S from './styles';
+import { useHeaderManager } from 'hooks/Header';
 
 const Timer: React.FC = () => {
   const { prepareTableData } = useTableManager();
+  const { isTable } = useHeaderManager();
   const [timer, setTimer] = useState<number>(0);
   const [updating, setUpdating] = useState<boolean>();
   const [lastUpdatedAt, setLastUpdatedAt] = useState<Date>();
@@ -36,7 +38,7 @@ const Timer: React.FC = () => {
   }, [timer]);
 
   return (
-    <S.Container>
+    <S.Container show={isTable()}>
       {updating ? (
         <S.Label>Atualizando...</S.Label>
       ) : (
