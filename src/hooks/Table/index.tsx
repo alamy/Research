@@ -56,6 +56,7 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
       newTableData[tb] = data;
     }
     setTableData(newTableData);
+    localStorage.setItem('@data', JSON.stringify(newTableData));
   }, [fundingData, getSymbols, symbols, tableData]);
 
   const handleApplyFilters = useCallback(
@@ -162,6 +163,14 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
       setColumns([...tables[table]]);
     }
   }, [selectedHeaderId, isTable, table]);
+
+  useEffect(() => {
+    if (!Object.keys(tableData).length) {
+      const data = localStorage.getItem('@data');
+      if (!data) return;
+      setTableData(JSON.parse(data));
+    }
+  }, []);
 
   return (
     <U.Context.Provider

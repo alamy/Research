@@ -8,6 +8,7 @@ import * as S from './styles';
 const Timer: React.FC = () => {
   const { prepareTableData } = useTableManager();
   const [timer, setTimer] = useState<number>(0);
+  const [updating, setUpdating] = useState<boolean>();
   const [lastUpdatedAt, setLastUpdatedAt] = useState<Date>();
   const hours: number = Math.floor(timer / 3600);
   const minutes: number = Math.floor(timer / 60);
@@ -15,9 +16,11 @@ const Timer: React.FC = () => {
 
   const handleUpdate = useCallback(async () => {
     if (timer > 0) return;
+    setUpdating(true);
     await prepareTableData();
     setTimer(TIME_TO_UPDATE);
     setLastUpdatedAt(new Date());
+    setUpdating(false);
   }, [timer, prepareTableData]);
 
   useEffect(() => {
@@ -34,10 +37,17 @@ const Timer: React.FC = () => {
 
   return (
     <S.Container>
-      {lastUpdatedAt && <S.ThinLabel>Atualizado às {U.formatHour(lastUpdatedAt)}</S.ThinLabel>}
-      <S.Label>
-        Próxima atualização em {U.formatTime(hours)}:{U.formatTime(minutes)}:{U.formatTime(seconds)}
-      </S.Label>
+      {updating ? (
+        <S.Label>Atualizando...</S.Label>
+      ) : (
+        <>
+          {lastUpdatedAt && <S.ThinLabel>Atualizado às {U.formatHour(lastUpdatedAt)}</S.ThinLabel>}
+          <S.Label>
+            Próxima atualização em {U.formatTime(hours)}:{U.formatTime(minutes)}:
+            {U.formatTime(seconds)}
+          </S.Label>
+        </>
+      )}
     </S.Container>
   );
 };
