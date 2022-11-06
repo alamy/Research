@@ -1,1 +1,1 @@
-export { default as Extra } from './Extra';
+export { default as TopContent } from './TopContent';

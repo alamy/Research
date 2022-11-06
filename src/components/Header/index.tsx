@@ -1,28 +1,37 @@
+import { useHeaderManager } from 'hooks/Header';
+import { IHeaderItemModel } from 'hooks/Header/interfaces';
 /* eslint-disable no-undef */
 import React, { useCallback } from 'react';
 import { useMediaQuery } from 'react-responsive';
 
-import * as I from './interfaces';
 import * as S from './styles';
 
-const Header: React.FC<I.IHeader> = ({ items, onSelect, selectedId }) => {
+const Header: React.FC = () => {
+  const { headerItems, selectedHeaderId, selectHeaderItem } = useHeaderManager();
   const isMobile = useMediaQuery({
     query: '(max-width: 700px)'
   });
 
-  const renderItems = useCallback((): JSX.Element[] => {
-    const width: number = (1 / items.length) * 100 - 1;
+  const onSelect = useCallback(
+    (item: IHeaderItemModel) => () => {
+      selectHeaderItem(item.id);
+    },
+    [selectHeaderItem]
+  );
 
-    const result: JSX.Element[] = items.map((item, idx) => {
+  const renderItems = useCallback((): JSX.Element[] => {
+    const width: number = (1 / headerItems.length) * 100 - 1;
+
+    const result: JSX.Element[] = headerItems.map((item, idx) => {
       return (
         <S.ItemContainer width={width} key={idx.toString()} onClick={onSelect && onSelect(item)}>
-          <S.ItemLabel selected={item.id === selectedId}>{item.label}</S.ItemLabel>
+          <S.ItemLabel selected={item.id === selectedHeaderId}>{item.label}</S.ItemLabel>
         </S.ItemContainer>
       );
     });
 
     return result;
-  }, [items, onSelect, selectedId]);
+  }, [headerItems, onSelect, selectedHeaderId]);
 
   return (
     <S.Container>

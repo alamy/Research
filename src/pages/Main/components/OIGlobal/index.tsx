@@ -5,8 +5,8 @@ import { IPossibleTables } from 'hooks/Table/interfaces';
 import * as S from './styles';
 import { getValueMask } from 'hooks/Table/utils';
 
-const Extra: React.FC = () => {
-  const { table, allTableData } = useTableManager();
+const OIGlobal: React.FC = () => {
+  const { table, tableData } = useTableManager();
 
   const getRealValue = (value: string): number => {
     if (value.includes('T')) return Number(value.replace(/\D/g, '')) * 1000000000000;
@@ -18,7 +18,7 @@ const Extra: React.FC = () => {
 
   if (table !== IPossibleTables.OPEN_INTEREST) return null;
   const total: number =
-    allTableData?.reduce((prev, current) => {
+    tableData?.reduce((prev, current) => {
       const value = getRealValue(current.oi);
       return prev + value;
     }, 0) || 0;
@@ -28,4 +28,4 @@ const Extra: React.FC = () => {
   return <S.Label>OI Global: ${getValueMask(total)}</S.Label>;
 };
 
-export default Extra;
+export default OIGlobal;

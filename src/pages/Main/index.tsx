@@ -1,39 +1,29 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-constant-condition */
 /* eslint-disable @typescript-eslint/no-empty-function */
-import React, { useCallback } from 'react';
-import { Dots } from 'react-activity';
+import React, { useEffect } from 'react';
 
 import * as S from './styles';
 import * as C from './components';
-import { Header, Table, Timer } from 'components';
+import { Header, Table } from 'components';
 import { headerItems } from './data';
-import { IHeaderItem } from 'components/Header/interfaces';
-import { useTableManager } from 'hooks';
-import { IPossibleTables } from 'hooks/Table/interfaces';
+import { useHeaderManager } from 'hooks/Header';
 
 const MainPage: React.FC = () => {
-  const { setTable, table } = useTableManager();
-  const onSelect = useCallback(
-    (item: IHeaderItem) => () => {
-      setTable(item.id as IPossibleTables);
-    },
-    [setTable]
-  );
+  const { setHeaderItems, selectHeaderItem } = useHeaderManager();
+
+  useEffect(() => {
+    setHeaderItems(headerItems);
+    selectHeaderItem(headerItems[0].id);
+  }, []);
 
   return (
     <S.Container>
-      <Header items={headerItems} onSelect={onSelect} selectedId={table} />
+      <Header />
 
       <S.ContentContainer>
-        {false ? (
-          <Dots size={50} color="white" />
-        ) : (
-          <>
-            <C.Extra />
-            <Timer />
-            <Table />
-          </>
-        )}
+        <C.TopContent />
+        <Table />
       </S.ContentContainer>
     </S.Container>
   );

@@ -8,14 +8,17 @@ import reportWebVitals from './reportWebVitals';
 import { theme } from 'theme';
 import 'react-activity/dist/library.css';
 import './index.css';
+import { HeaderManagerProvider } from 'hooks/Header';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
-      <TableManagerProvider>
-        <App />
-      </TableManagerProvider>
+      <HeaderManagerProvider>
+        <TableManagerProvider>
+          <App />
+        </TableManagerProvider>
+      </HeaderManagerProvider>
     </ThemeProvider>
   </React.StrictMode>
 );

@@ -5,8 +5,8 @@ import * as I from './interfaces';
 import * as S from './styles';
 
 const Cell: React.FC<I.ICell> = ({ column, rowIndex }) => {
-  const { tableData } = useTableManager();
-  let data = tableData[rowIndex] ? tableData[rowIndex][column] : '';
+  const { filteredTableData } = useTableManager();
+  let data = filteredTableData[rowIndex] ? filteredTableData[rowIndex][column] : '';
   const isNumeric =
     (typeof data === 'string' && !!Number(data.replace('%', ''))) || typeof data === 'number';
   const isPositive = typeof data === 'string' && Number(data.replace('%', '')) > 0;

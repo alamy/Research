@@ -248,7 +248,7 @@ const getOIData = async (
 
 export const prepareData = async (
   symbols: I.ISymbol[],
-  table: I.IPossibleTables,
+  table: string,
   fundingData: I.ISocketData
 ): Promise<I.IRowData[]> => {
   const { columns, data, requestResp, symbolsStr } = getBaseData(symbols, table);
