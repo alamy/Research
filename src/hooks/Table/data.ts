@@ -19,7 +19,7 @@ export const timeHelper: ITimeHelper = {
       periodOrigin: '5m',
       periodTarget: '5m',
       positionOrigin: -1,
-      positionTarget: -12
+      positionTarget: -13
     },
     '4h': {
       url: 'https://fapi.binance.com/futures/data/globalLongShortAccountRatio',
@@ -27,7 +27,7 @@ export const timeHelper: ITimeHelper = {
       periodOrigin: '5m',
       periodTarget: '5m',
       positionOrigin: -1,
-      positionTarget: -16
+      positionTarget: -17
     },
     '1d': {
       url: 'https://fapi.binance.com/futures/data/globalLongShortAccountRatio',
@@ -35,7 +35,7 @@ export const timeHelper: ITimeHelper = {
       periodOrigin: '5m',
       periodTarget: '5m',
       positionOrigin: -1,
-      positionTarget: -24
+      positionTarget: -25
     }
   },
   market_volume: {
@@ -75,35 +75,35 @@ export const timeHelper: ITimeHelper = {
   open_interest: {
     '15m': {
       url: 'https://fapi.binance.com/futures/data/openInterestHist',
-      valueToFind: 'buySellRatio',
-      periodOrigin: '',
-      periodTarget: '',
+      valueToFind: 'sumOpenInterestValue',
+      periodOrigin: '5m',
+      periodTarget: '5m',
       positionOrigin: -1,
-      positionTarget: -1
+      positionTarget: -3
     },
     '1h': {
       url: 'https://fapi.binance.com/futures/data/openInterestHist',
-      valueToFind: 'buySellRatio',
-      periodOrigin: '',
-      periodTarget: '',
+      valueToFind: 'sumOpenInterestValue',
+      periodOrigin: '5m',
+      periodTarget: '5m',
       positionOrigin: -1,
-      positionTarget: -1
+      positionTarget: -13
     },
     '4h': {
       url: 'https://fapi.binance.com/futures/data/openInterestHist',
-      valueToFind: 'buySellRatio',
-      periodOrigin: '',
-      periodTarget: '',
+      valueToFind: 'sumOpenInterestValue',
+      periodOrigin: '5m',
+      periodTarget: '5m',
       positionOrigin: -1,
-      positionTarget: -1
+      positionTarget: -17
     },
     '1d': {
       url: 'https://fapi.binance.com/futures/data/openInterestHist',
-      valueToFind: 'buySellRatio',
-      periodOrigin: '',
-      periodTarget: '',
+      valueToFind: 'sumOpenInterestValue',
+      periodOrigin: '5m',
+      periodTarget: '5m',
       positionOrigin: -1,
-      positionTarget: -1
+      positionTarget: -25
     }
   }
 };
@@ -299,7 +299,7 @@ export const tables: ITablesMapper = {
     {
       id: '15m%',
       label: '15m Δ%',
-      enabled: false
+      enabled: true
     },
     {
       id: '1h',
@@ -309,7 +309,7 @@ export const tables: ITablesMapper = {
     {
       id: '1h%',
       label: '1h Δ%',
-      enabled: false
+      enabled: true
     },
     {
       id: '4h',
@@ -319,7 +319,7 @@ export const tables: ITablesMapper = {
     {
       id: '4h%',
       label: '4h Δ%',
-      enabled: false
+      enabled: true
     },
     {
       id: '24h',
@@ -327,9 +327,9 @@ export const tables: ITablesMapper = {
       enabled: false
     },
     {
-      id: '24h%',
+      id: '1d%',
       label: '24h Δ%',
-      enabled: false
+      enabled: true
     }
   ],
   liquidations: [
