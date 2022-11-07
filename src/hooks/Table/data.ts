@@ -24,16 +24,16 @@ export const timeHelper: ITimeHelper = {
     '4h': {
       url: 'https://fapi.binance.com/futures/data/globalLongShortAccountRatio',
       valueToFind: 'longShortRatio',
-      periodOrigin: '5m',
-      periodTarget: '5m',
+      periodOrigin: '15m',
+      periodTarget: '15m',
       positionOrigin: -1,
       positionTarget: -17
     },
     '1d': {
       url: 'https://fapi.binance.com/futures/data/globalLongShortAccountRatio',
       valueToFind: 'longShortRatio',
-      periodOrigin: '5m',
-      periodTarget: '5m',
+      periodOrigin: '1h',
+      periodTarget: '1h',
       positionOrigin: -1,
       positionTarget: -25
     }
@@ -92,16 +92,16 @@ export const timeHelper: ITimeHelper = {
     '4h': {
       url: 'https://fapi.binance.com/futures/data/openInterestHist',
       valueToFind: 'sumOpenInterestValue',
-      periodOrigin: '5m',
-      periodTarget: '5m',
+      periodOrigin: '15m',
+      periodTarget: '15m',
       positionOrigin: -1,
       positionTarget: -17
     },
     '1d': {
       url: 'https://fapi.binance.com/futures/data/openInterestHist',
       valueToFind: 'sumOpenInterestValue',
-      periodOrigin: '5m',
-      periodTarget: '5m',
+      periodOrigin: '1h',
+      periodTarget: '1h',
       positionOrigin: -1,
       positionTarget: -25
     }
