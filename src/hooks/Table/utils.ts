@@ -217,6 +217,7 @@ const getMVData = async (
 };
 
 const getOIData = async (
+  table: I.IPossibleTables,
   symbols: I.ISymbol[],
   columns: I.IColumnModel[],
   symbolsStr: string[],
@@ -225,6 +226,44 @@ const getOIData = async (
 ) => {
   for (let index = 0; index < columns.length; index++) {
     const column = columns[index].id.toLowerCase();
+
+    if (TIME_IDS.indexOf(column) !== -1) {
+      const { positionOrigin, periodTarget, periodOrigin, valueToFind } = timeHelper[table][column];
+      requestResp[column] = await loadTimeData(table, column, column, symbolsStr);
+      if (!requestResp[periodOrigin])
+        requestResp[periodOrigin] = await loadTimeData(table, column, periodOrigin, symbolsStr);
+      if (periodTarget !== periodOrigin) {
+        requestResp[periodTarget] = await loadTimeData(table, column, periodTarget, symbolsStr);
+      }
+      data.forEach((row, index) => {
+        const item = requestResp[column][index].at(positionOrigin);
+        row[column] = item[valueToFind] || '';
+      });
+    }
+
+    const base = column.replace('%', '');
+    if (PERCENT_IDS.indexOf(column) !== -1) {
+      const { positionOrigin, positionTarget, valueToFind, periodOrigin, periodTarget } =
+        timeHelper[table][base];
+      if (!requestResp[periodOrigin])
+        requestResp[periodOrigin] = await loadTimeData(table, base, periodOrigin, symbolsStr);
+      if (periodTarget !== periodOrigin && !requestResp[periodTarget]) {
+        requestResp[periodTarget] = await loadTimeData(table, base, periodTarget, symbolsStr);
+      }
+      const originValues = requestResp[periodOrigin];
+      const targetValues = requestResp[periodTarget];
+      data.forEach((row, index) => {
+        const newItem = originValues[index].at(positionOrigin);
+        const oldItem = targetValues[index].at(positionTarget);
+        if (!newItem || !oldItem) return '';
+
+        const newItemAsNumber = Number(newItem[valueToFind]);
+        const oldItemAsNumber = Number(oldItem[valueToFind]);
+
+        row[column] = `${((newItemAsNumber / oldItemAsNumber - 1) * 100).toFixed(2)}%`;
+      });
+    }
+
     if (column === 'oi') {
       const url = `https://fapi.binance.com/fapi/v1/openInterest?symbol=${S_PLACEHOLDER}`;
       const parcial = await getParcial(symbolsStr, url);
@@ -266,7 +305,7 @@ export const prepareData = async (
   }
 
   if (table === I.IPossibleTables.OPEN_INTEREST) {
-    return await getOIData(symbols, columns, symbolsStr, requestResp, data);
+    return await getOIData(table, symbols, columns, symbolsStr, requestResp, data);
   }
 
   return data;
