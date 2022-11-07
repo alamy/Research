@@ -5,8 +5,13 @@ import axios from 'axios';
 import { tables, TIME_IDS, PERCENT_IDS, timeHelper } from './data';
 import * as I from './interfaces';
 import { S_PLACEHOLDER, UNAVAILABLE_SYMBOLS } from './consants';
+import { getMaskedValue } from 'utils/maskValue';
 
 export const Context = createContext<I.ITableManagerContextData>({} as I.ITableManagerContextData);
+
+export const clearValue = (value: string): string => {
+  return value.replace('%', '').replace('$', '');
+};
 
 export const adjustFunding = (fundingData: I.IFundingData[]): I.ISocketData => {
   const newFoundingData: I.ISocketData = {};
@@ -84,22 +89,6 @@ const getParcial = async (symbolsStr: string[], url: string): Promise<any[]> => 
   );
 
   return parcial;
-};
-
-export const getValueMask = (value: string | number): string => {
-  const valueAsNumber = Number(value);
-  if (!valueAsNumber) return `${value}`;
-
-  const thousands = Math.floor(valueAsNumber / 1000);
-  const milions = Math.floor(valueAsNumber / 1000000);
-  const bilions = Math.floor(valueAsNumber / 1000000000);
-  const trillions = Math.floor(valueAsNumber / 1000000000000);
-
-  if (trillions) return `${trillions}T`;
-  if (bilions) return `${bilions}B`;
-  if (milions) return `${milions}M`;
-  if (thousands) return `${thousands}K`;
-  return `${valueAsNumber}`;
 };
 
 const getFundingData = (data: I.IRowData[], fundingData: I.ISocketData): I.IRowData[] => {
@@ -274,10 +263,11 @@ const getOIData = async (
       });
 
       data.forEach((row, index) => {
-        row[column] = `$${getValueMask(
+        const maskedValue = getMaskedValue(
           Number(requestResp.oi[index].openInterest) *
             Number(symbolValues[row.symbol.toUpperCase()])
-        )}`;
+        );
+        row[column] = maskedValue ? `$${maskedValue}` : '';
       });
     }
   }
