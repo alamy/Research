@@ -10,6 +10,7 @@ import { tables } from './data';
 import * as I from './interfaces';
 import * as U from './utils';
 import * as C from './consants';
+import { unmaskValue } from 'utils/unmaskValue';
 
 export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) => {
   const { isTable, selectedHeaderId } = useHeaderManager();
@@ -87,11 +88,16 @@ export const TableManagerProvider: React.FC<I.ITableManager> = ({ children }) =>
           }
         }
 
-        const value1 = Number(prev[column].replace('%', '').replace('M', '').replace('$', ''));
-        const value2 = Number(next[column].replace('%', '').replace('M', '').replace('$', ''));
+        let value1: string | number = U.clearValue(prev[column]);
+        let value2: string | number = U.clearValue(next[column]);
 
-        if (currOrder.order === 'ASC') return value1 - value2;
-        return value2 - value1;
+        if (column === 'oi') {
+          value1 = unmaskValue(U.clearValue(prev[column]));
+          value2 = unmaskValue(U.clearValue(next[column]));
+        }
+
+        if (currOrder.order === 'ASC') return Number(value1) - Number(value2);
+        return Number(value2) - Number(value1);
       });
 
       return filteredData;
