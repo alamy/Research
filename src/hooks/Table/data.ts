@@ -283,7 +283,7 @@ export const tables: ITablesMapper = {
     },
     {
       id: 'OI',
-      label: 'OI %',
+      label: '$ OI',
       enabled: true
     },
     {
